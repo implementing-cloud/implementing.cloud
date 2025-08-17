@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { BlogCard } from "@/components/blog-card";
 import { TagFilter } from "@/components/tag-filter";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { PromoBanner } from "@/components/promo-banner";
 
 interface BlogData {
   title: string;
@@ -85,14 +86,16 @@ export default async function HomePage({
           flickerChance={0.05}
         />
       </div>
+
+      {/* Hero Section */}
       <div className="p-6 border-b border-border flex flex-col gap-6 min-h-[250px] justify-center relative z-10">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col gap-2">
-            <h1 className="font-medium text-4xl md:text-5xl tracking-tighter">
-              Magic UI Blog
+            <h1 className="font-medium text-4xl md:text-5xl tracking-tighter text-pretty">
+              Discover, Compare and Implement <span>Latest Technology</span>
             </h1>
-            <p className="text-muted-foreground text-sm md:text-base lg:text-lg">
-              Latest news and updates from Magic UI.
+            <p className="text-muted-foreground text-sm md:text-base lg:text-lg text-pretty">
+              No more endless tabs. No more FOMO. We’ve got you covered.
             </p>
           </div>
         </div>
@@ -107,6 +110,10 @@ export default async function HomePage({
         )}
       </div>
 
+      {/* Promo Banner Section */}
+      <PromoBanner />
+
+      {/* Articles Section */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
         <Suspense fallback={<div>Loading articles...</div>}>
           <div
