@@ -9,7 +9,7 @@ import Footer from "@/components/footer";
 import { NotesWrapper } from "@/components/notes-wrapper";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { NotesSidebar } from "@/components/notes-sidebar";
-import { NotesProvider } from "@/contexts/notes-context";
+import { QuickNotes } from "@/components/quick-notes";
 import "@/app/globals.css";
 
 export const viewport: Viewport = {
@@ -44,17 +44,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NotesProvider>
-            <SidebarProvider defaultOpen={false}>
-              <SidebarInset>
-                <SiteNav />
-                {children}
-                <Footer />
-                <NotesWrapper />
-              </SidebarInset>
-              <NotesSidebar />
-            </SidebarProvider>
-          </NotesProvider>
+          <SidebarProvider defaultOpen={false}>
+            <SidebarInset>
+              <SiteNav />
+              {children}
+              <Footer />
+              <NotesWrapper />
+            </SidebarInset>
+            <NotesSidebar />
+          </SidebarProvider>
+          <QuickNotes />
         </ThemeProvider>
       </body>
     </html>

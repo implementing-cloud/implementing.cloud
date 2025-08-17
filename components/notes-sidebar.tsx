@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Plus } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -9,18 +10,19 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
 } from "@/components/ui/sidebar"
-import { NewNoteCard } from "@/components/new-note-card"
+import { Card, CardContent } from "@/components/ui/card"
 import { NotesList } from "@/components/notes-list"
-import { useNotesContext } from "@/contexts/notes-context"
+import { useNotes, useNotesLoaded, useNotesActions } from "@/stores/notes-store"
 
 export function NotesSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { 
-    notes, 
-    isLoaded, 
-    addNote, 
-    deleteNote, 
-    openFloatingNote 
-  } = useNotesContext()
+  const notes = useNotes()
+  const isLoaded = useNotesLoaded()
+  const { deleteNote, openFloatingNote, createEmptyNote, cleanupEmptyNotes } = useNotesActions()
+
+  const handleNewNote = () => {
+    cleanupEmptyNotes()
+    createEmptyNote()
+  }
 
   if (!isLoaded) {
     return (
@@ -38,14 +40,24 @@ export function NotesSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       <SidebarHeader>
         <h2 className="text-lg font-semibold">Notes</h2>
         <p className="text-sm text-muted-foreground">
-          Press <kbd className="px-1 py-0.5 text-xs bg-muted rounded">N</kbd> to toggle
+          Press <kbd className="px-1 py-0.5 text-xs bg-muted rounded">N</kbd> to create note
         </p>
       </SidebarHeader>
       <SidebarContent className="px-3">
         <SidebarGroup>
-          <SidebarGroupLabel>Create New</SidebarGroupLabel>
+          <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
-            <NewNoteCard onSave={addNote} />
+            <Card 
+              className="border-dashed border-2 hover:border-primary/50 transition-colors cursor-pointer" 
+              onClick={handleNewNote}
+            >
+              <CardContent className="flex items-center justify-center py-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Plus className="size-4" />
+                  New Note
+                </div>
+              </CardContent>
+            </Card>
           </SidebarGroupContent>
         </SidebarGroup>
         

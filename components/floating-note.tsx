@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { X, Maximize2, Minimize2, Edit3 } from "lucide-react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
+import { X, Maximize2, Minimize2, Edit3, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { MDXEditor, headingsPlugin, quotePlugin, listsPlugin, linkPlugin, tablePlugin, thematicBreakPlugin, markdownShortcutPlugin, BoldItalicUnderlineToggles, UndoRedo, Separator, BlockTypeSelect, CreateLink, InsertTable, toolbarPlugin } from "@mdxeditor/editor"
 import { Note, FloatingNote as FloatingNoteType } from "@/lib/notes"
+import { useDebouncedSave } from "@/hooks/use-debounced-save"
+import { OptimizedTitleInput, OptimizedMDXEditor } from "@/components/optimized-inputs"
 import "@mdxeditor/editor/style.css"
 
 interface FloatingNoteProps {
@@ -16,6 +16,32 @@ interface FloatingNoteProps {
   onUpdate: (updates: Partial<FloatingNoteType>) => void
   onBringToFront: () => void
   onUpdateNote: (updates: Partial<Pick<Note, 'title' | 'content'>>) => void
+}
+
+// Throttle function for performance optimization
+function throttle<T extends (...args: unknown[]) => void>(func: T, wait: number): T {
+  let timeout: NodeJS.Timeout | null = null
+  let previous = 0
+  
+  return ((...args: Parameters<T>) => {
+    const now = Date.now()
+    const remaining = wait - (now - previous)
+    
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout)
+        timeout = null
+      }
+      previous = now
+      func(...args)
+    } else if (!timeout) {
+      timeout = setTimeout(() => {
+        previous = Date.now()
+        timeout = null
+        func(...args)
+      }, remaining)
+    }
+  }) as T
 }
 
 export function FloatingNote({ 
@@ -28,38 +54,71 @@ export function FloatingNote({
 }: FloatingNoteProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(true) // Default to edit mode
   const [editTitle, setEditTitle] = useState(note.title)
   const [editContent, setEditContent] = useState(note.content)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 })
+  const [isSaving, setIsSaving] = useState(false)
+  
+  // Use refs for stable values that don't cause re-renders
+  const dragStartRef = useRef({ x: 0, y: 0 })
+  const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // Stable throttled update function using useRef to prevent recreation
+  const throttledUpdateRef = useRef(
+    throttle((updates: Partial<FloatingNoteType>) => {
+      onUpdate(updates)
+    }, 16)
+  )
+
+  // Update the onUpdate reference when it changes, but don't recreate throttle
+  useEffect(() => {
+    throttledUpdateRef.current = throttle((updates: Partial<FloatingNoteType>) => {
+      onUpdate(updates)
+    }, 16)
+  }, [onUpdate])
+
+  // Debounced auto-save for content (eliminates typing lag)
+  const { debouncedSave: debouncedNoteSave, forceSave, cleanup } = useDebouncedSave({
+    delay: 1000, // 1 second after stopping typing
+    onSave: (updates: Partial<Pick<Note, 'title' | 'content'>>) => {
+      onUpdateNote(updates)
+    },
+    onSaveStart: () => setIsSaving(true),
+    onSaveComplete: () => setIsSaving(false)
+  })
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return cleanup
+  }, [cleanup])
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget || (e.target as Element).closest('.drag-handle')) {
       onBringToFront()
       setIsDragging(true)
-      setDragStart({
+      dragStartRef.current = {
         x: e.clientX - floating.x,
         y: e.clientY - floating.y,
-      })
+      }
     }
-  }
+  }, [floating.x, floating.y, onBringToFront])
 
-  const handleResizeStart = (e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     onBringToFront()
     setIsResizing(true)
-    setResizeStart({
+    resizeStartRef.current = {
       x: e.clientX,
       y: e.clientY,
       width: floating.width,
       height: floating.height,
-    })
-  }
+    }
+  }, [floating.width, floating.height, onBringToFront])
 
   const handleSave = () => {
-    onUpdateNote({
+    // Force immediate save when user manually saves
+    forceSave({
       title: editTitle,
       content: editContent,
     })
@@ -72,21 +131,38 @@ export function FloatingNote({
     setIsEditing(false)
   }
 
+  // Immediate UI update + debounced save for smooth typing
+  const handleContentChange = useCallback((content: string) => {
+    setEditContent(content) // Immediate UI update - no lag
+    debouncedNoteSave({ content }) // Debounced save - waits for typing pause
+  }, [debouncedNoteSave])
+
+  // Handle title changes with debounced save
+  const handleTitleChange = useCallback((title: string) => {
+    setEditTitle(title) // Immediate UI update
+    debouncedNoteSave({ title }) // Debounced save
+  }, [debouncedNoteSave])
+
+  // Separate drag/resize effect with minimal dependencies
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        onUpdate({
-          x: Math.max(0, Math.min(window.innerWidth - floating.width, e.clientX - dragStart.x)),
-          y: Math.max(0, Math.min(window.innerHeight - floating.height, e.clientY - dragStart.y)),
+        const windowWidth = window.innerWidth
+        const windowHeight = window.innerHeight
+        
+        throttledUpdateRef.current({
+          x: Math.max(0, Math.min(windowWidth - floating.width, e.clientX - dragStartRef.current.x)),
+          y: Math.max(0, Math.min(windowHeight - floating.height, e.clientY - dragStartRef.current.y)),
         })
       }
       
       if (isResizing) {
-        const deltaX = e.clientX - resizeStart.x
-        const deltaY = e.clientY - resizeStart.y
-        onUpdate({
-          width: Math.max(300, resizeStart.width + deltaX),
-          height: Math.max(200, resizeStart.height + deltaY),
+        const deltaX = e.clientX - resizeStartRef.current.x
+        const deltaY = e.clientY - resizeStartRef.current.y
+        
+        throttledUpdateRef.current({
+          width: Math.max(300, resizeStartRef.current.width + deltaX),
+          height: Math.max(200, resizeStartRef.current.height + deltaY),
         })
       }
     }
@@ -104,29 +180,42 @@ export function FloatingNote({
         document.removeEventListener('mouseup', handleMouseUp)
       }
     }
-  }, [isDragging, isResizing, dragStart, resizeStart, floating, onUpdate])
+  }, [isDragging, isResizing, floating.width, floating.height]) // Removed problematic dependencies
+
+  // Memoize expensive style calculations to prevent recalculation on every render
+  const cardStyles = useMemo(() => ({
+    left: floating.x,
+    top: floating.y,
+    width: floating.width,
+    height: floating.height,
+    zIndex: Math.max(9999, floating.zIndex),
+    cursor: isDragging ? 'grabbing' : 'default',
+    willChange: isDragging || isResizing ? 'transform' : 'auto',
+    // Pre-calculated complex shadow for better performance
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+    filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.07))',
+  }), [floating.x, floating.y, floating.width, floating.height, floating.zIndex, isDragging, isResizing])
+
+  // Memoize className to prevent unnecessary recalculations
+  const cardClassName = useMemo(() => 
+    "fixed border-2 border-border/20 bg-background/95 backdrop-blur-md",
+    []
+  )
 
   return (
     <Card
       ref={cardRef}
-      className="fixed border shadow-lg bg-background/95 backdrop-blur"
-      style={{
-        left: floating.x,
-        top: floating.y,
-        width: floating.width,
-        height: floating.height,
-        zIndex: floating.zIndex,
-        cursor: isDragging ? 'grabbing' : 'default',
-      }}
+      className={cardClassName}
+      style={cardStyles}
       onMouseDown={handleMouseDown}
       onClick={onBringToFront}
     >
       <CardHeader className="pb-2 drag-handle cursor-grab active:cursor-grabbing">
         <div className="flex items-center justify-between">
           {isEditing ? (
-            <Input
+            <OptimizedTitleInput
               value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
+              onChange={handleTitleChange}
               className="font-medium text-sm h-7"
               autoFocus
             />
@@ -134,6 +223,14 @@ export function FloatingNote({
             <h3 className="font-medium text-sm truncate">{note.title}</h3>
           )}
           <div className="flex items-center gap-1">
+            {/* Save indicator */}
+            {isSaving && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Clock className="size-3 animate-pulse" />
+                <span>Saving...</span>
+              </div>
+            )}
+            
             {isEditing ? (
               <>
                 <Button size="sm" variant="ghost" className="size-6 p-0" onClick={handleSave}>
@@ -166,32 +263,9 @@ export function FloatingNote({
         <div className="h-full overflow-auto">
           {isEditing ? (
             <div className="prose prose-sm max-w-none h-full">
-              <MDXEditor
+              <OptimizedMDXEditor
                 markdown={editContent}
-                onChange={setEditContent}
-                plugins={[
-                  headingsPlugin(),
-                  quotePlugin(),
-                  listsPlugin(),
-                  linkPlugin(),
-                  tablePlugin(),
-                  thematicBreakPlugin(),
-                  markdownShortcutPlugin(),
-                  toolbarPlugin({
-                    toolbarContents: () => (
-                      <>
-                        <UndoRedo />
-                        <Separator />
-                        <BoldItalicUnderlineToggles />
-                        <Separator />
-                        <BlockTypeSelect />
-                        <Separator />
-                        <CreateLink />
-                        <InsertTable />
-                      </>
-                    )
-                  })
-                ]}
+                onChange={handleContentChange}
                 className="h-full"
               />
             </div>

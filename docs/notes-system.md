@@ -1,50 +1,52 @@
 # Notes System Documentation
 
-A comprehensive note-taking system with floating notes, MDX editing, and keyboard shortcuts built into the blog template.
+An optimized note-taking system with instant note creation, floating windows, and high-performance editing built into the blog template.
 
 ## Overview
 
-The notes system provides a powerful way to create, edit, and manage notes while browsing the site. Notes can be displayed as a sidebar or as draggable floating windows that overlay the main content.
+The notes system provides a streamlined way to create, edit, and manage notes while browsing the site. Notes appear as draggable floating windows with full MDX editing capabilities, designed for maximum performance and minimal interruption.
 
 ## Features
 
 ### ✨ Core Features
 
-- **Rich Text Editing**: Full MDX editor with formatting toolbar
-- **Floating Notes**: Draggable and resizable note windows
+- **Instant Note Creation**: Press N to create a note immediately
+- **High-Performance**: Zustand state management with optimized re-renders
+- **Floating Notes**: Smooth draggable and resizable note windows
 - **Persistent Storage**: Notes saved to localStorage automatically
-- **Keyboard Shortcuts**: Quick access with hotkeys
-- **Push Layout**: Sidebar pushes content aside (like dashboard)
-- **Real-time Updates**: Changes reflect immediately across all instances
+- **Smart Z-Index**: Notes always appear above page content
+- **Auto-Cleanup**: Empty notes are automatically removed
+- **Throttled Performance**: 60fps smooth drag/resize interactions
 
 ### 🎯 User Interface
 
 - **Floating Action Button**: Always-visible note icon in bottom-right corner
-- **Sidebar Panel**: Organized list of all notes with creation interface
-- **Floating Windows**: Individual notes that can be moved anywhere on screen
-- **Responsive Design**: Works on desktop and mobile devices
+- **Management Sidebar**: Clean list of notes with actions (no cramped editor)
+- **Floating Windows**: Full-screen MDX editor in draggable windows
+- **Responsive Design**: Optimized for desktop and mobile devices
 
 ## Usage Guide
 
-### Opening Notes
-
-#### Method 1: Keyboard Shortcut
-- Press **`N`** key (when not typing in input fields)
-
-#### Method 2: Floating Button
-- Click the floating note icon in the bottom-right corner
-
 ### Creating Notes
 
-1. Open the notes sidebar (press `N` or click floating button)
-2. Click the "Create new note" dashed card
-3. Enter a title for your note
-4. Use the MDX editor to write content with rich formatting:
-   - **Bold**, *italic*, and underlined text
-   - Headers, lists, and quotes
-   - Links and tables
-   - Code blocks and more
-5. Click the save button or press outside to save
+#### Method 1: Instant Creation (Recommended)
+- Press **`N`** key (when not typing in input fields)
+- A new floating note appears instantly ready for editing
+
+#### Method 2: From Sidebar
+- Press **`S`** or click floating button to open sidebar
+- Click the "New Note" card
+
+### Managing Notes
+
+#### Viewing Notes
+- **In Sidebar**: Clean list showing title, last update time
+- **As Floating**: Click any note in sidebar to open as floating editor
+
+#### Editing Notes
+- **Auto-Edit Mode**: New notes open directly in edit mode
+- **Click Edit**: Use edit icon (✏️) in existing floating notes
+- **Auto-Save**: Changes are saved automatically while typing
 
 ### Managing Notes
 
@@ -91,17 +93,24 @@ The notes system provides a powerful way to create, edit, and manage notes while
 
 | Key | Action |
 |-----|--------|
-| `N` | Toggle notes sidebar |
+| `N` | Create new floating note instantly |
+| `S` | Toggle notes sidebar for management |
 
 **Note**: Shortcuts only work when not typing in input fields, textareas, or editors.
 
 ## Technical Details
 
-### Data Storage
-- **Location**: Browser localStorage
-- **Format**: JSON with automatic serialization
-- **Persistence**: Notes persist across browser sessions
-- **Backup**: Manual export/import (planned feature)
+### State Management
+- **Store**: Zustand with selective subscriptions
+- **Performance**: Optimized re-renders, only affected components update
+- **Persistence**: Browser localStorage with automatic serialization
+- **Auto-Cleanup**: Empty notes removed every 30 seconds
+
+### Performance Optimizations
+- **Throttled Updates**: 60fps drag/resize with 16ms throttling
+- **Smart Z-Index**: Dynamic z-index management (minimum 9999)
+- **Selective Subscriptions**: Components only re-render when their data changes
+- **Debounced Auto-Save**: Content saves throttled to 100ms for smooth typing
 
 ### Data Structure
 ```typescript
@@ -135,36 +144,38 @@ interface FloatingNote {
 ### Core Components
 
 #### `NotesWrapper`
-- Main orchestrator component
-- Handles keyboard shortcuts
-- Renders floating button and floating notes
+- Main orchestrator component with auto-cleanup
+- Handles keyboard shortcuts (N for create, S for sidebar)
+- Renders floating button and floating notes with performance monitoring
 
 #### `NotesSidebar`
-- Right-side panel with notes list
-- Integrates with existing sidebar system
-- Shows note count and keyboard hint
-
-#### `NewNoteCard`
-- Dashed card for creating new notes
-- Inline MDX editor for content creation
-- Save/cancel functionality
+- Simplified management-only sidebar
+- Clean notes list with quick actions
+- No embedded editor (better UX)
 
 #### `NotesList`
-- Displays all notes with metadata
+- Optimized list with selective re-rendering
 - Click to open as floating note
-- Dropdown menu for actions
+- Dropdown menu for delete action
 
 #### `FloatingNote`
-- Individual draggable note window
-- Edit mode with MDX editor
-- Resize and position controls
+- High-performance draggable note window
+- Throttled drag/resize for 60fps smoothness
+- Full MDX editor with auto-save
+- Smart z-index management
 
-### Hooks
+### State Management
 
-#### `useNotes`
-- Manages note data and localStorage
-- CRUD operations for notes
-- Floating note state management
+#### `useNotesStore` (Zustand)
+- Centralized state with selective subscriptions
+- Optimized CRUD operations
+- Auto-cleanup and localStorage persistence
+
+#### Selective Hooks
+- `useNotes()` - Subscribe to notes array only
+- `useFloatingNotes()` - Subscribe to floating positions only  
+- `useNotesActions()` - Access actions without re-renders
+- `useNotesLoaded()` - Subscribe to loading state only
 
 #### `useKeyboardShortcuts`
 - Global keyboard event handling
@@ -198,10 +209,14 @@ interface FloatingNote {
 
 ## Performance
 
-- **Lazy Loading**: Components load only when needed
-- **Efficient Updates**: React state management optimization
-- **Memory Management**: Proper cleanup of event listeners
-- **Storage Optimization**: Minimal localStorage footprint
+- **Zustand Store**: Eliminates React Context re-render cascades
+- **Selective Subscriptions**: Components only update when their data changes
+- **Throttled Interactions**: 60fps smooth drag/resize with 16ms throttling
+- **Smart Z-Index**: Dynamic management without layout thrashing
+- **Auto-Cleanup**: Periodic empty note removal (30s intervals)
+- **Debounced Auto-Save**: Smooth typing with 100ms content save throttling
+- **Memory Management**: Proper cleanup of timers and event listeners
+- **Storage Optimization**: Efficient localStorage with automatic serialization
 
 ## Security
 

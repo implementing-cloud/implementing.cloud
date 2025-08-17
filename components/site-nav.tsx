@@ -95,6 +95,12 @@ export function SiteNav() {
                 Compare
               </Link>
               <Link
+                href="/notes"
+                className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                Notes
+              </Link>
+              <Link
                 href="/login"
                 className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2 rounded-md hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
               >
@@ -200,6 +206,13 @@ export function SiteNav() {
               onClick={() => setIsMenuOpen(false)}
             >
               Compare
+            </Link>
+            <Link
+              href="/notes"
+              className="block text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Notes
             </Link>
             <Link
               href="/login"
