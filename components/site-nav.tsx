@@ -22,7 +22,7 @@ export function SiteNav() {
           >
             <img
               src="/ic-logo.png"
-              alt="Magic UI"
+              alt="Implementing Cloud"
               className="w-10 h-10 object-cover rounded-md"
             />
             <div className="flex flex-col">

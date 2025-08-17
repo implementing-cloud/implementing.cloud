@@ -5,6 +5,9 @@ const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
   transpilePackages: ["geist"],
+  images: {
+    domains: ["picsum.photos"],
+  },
 };
 
 export default withMDX(nextConfig);

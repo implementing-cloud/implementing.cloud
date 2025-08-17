@@ -152,7 +152,7 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
       <Button
         onClick={showQuickNotes}
         size="icon"
-        className="fixed bottom-6 right-20 z-50 size-12 rounded-full shadow-lg hover:shadow-xl transition-shadow bg-primary hover:bg-primary/90"
+        className="fixed bottom-6 right-6 md:right-20 z-50 size-12 rounded-full shadow-lg hover:shadow-xl transition-shadow bg-primary hover:bg-primary/90"
         aria-label="Quick note"
       >
         <NotebookPen className="size-5" />

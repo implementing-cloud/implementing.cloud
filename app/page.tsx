@@ -2,10 +2,12 @@ import { docs, meta } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { createMDXSource } from "fumadocs-mdx";
 import { Suspense } from "react";
+import Link from "next/link";
 import { BlogCard } from "@/components/blog-card";
 import { TagFilter } from "@/components/tag-filter";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { PromoBanner } from "@/components/promo-banner";
+import { HowItWorks } from "@/components/how-it-works";
 
 interface BlogData {
   title: string;
@@ -116,6 +118,9 @@ export default async function HomePage({
 
       {/* Articles Section */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
+        <div className="py-8">
+          <h2 className="text-2xl font-medium tracking-tight mb-6">You might interest</h2>
+        </div>
         <Suspense fallback={<div>Loading articles...</div>}>
           <div
             className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative overflow-hidden border-x border-border ${
@@ -140,7 +145,26 @@ export default async function HomePage({
             })}
           </div>
         </Suspense>
+
+        {/* Load More CTAs */}
+        <div className="py-8 flex justify-center gap-4">
+          <Link 
+            href="/services"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+          >
+            Show {sortedBlogs.length - filteredBlogs.length > 0 ? sortedBlogs.length - filteredBlogs.length : sortedBlogs.length} more services and tools
+          </Link>
+          <Link 
+            href="/providers"
+            className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors"
+          >
+            Browse Providers
+          </Link>
+        </div>
       </div>
+
+      {/* How it works Section */}
+      <HowItWorks />
     </div>
   );
 }
