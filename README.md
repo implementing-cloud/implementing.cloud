@@ -101,6 +101,21 @@ export const authors: Record<string, Author> = {
 
 Then reference your author in blog posts using the key (e.g., `author: "yourname"`).
 
+## ✨ Features
+
+### Interactive Mobile Promo Banner
+The platform includes a responsive promotional banner that adapts to provide optimal user experience across devices:
+
+- **Desktop**: Traditional bento-style grid layout with full feature cards
+- **Mobile**: Interactive layout with highlighted feature + 2x2 grid of compact cards
+- **Auto-rotation**: Featured content cycles every 5 seconds
+- **Tap-to-explore**: Users can tap any grid card to bring it to the highlighted position
+- **Smooth transitions**: Elegant fade animations between content changes
+
+Perfect for showcasing key platform features without overwhelming mobile users with excessive scrolling.
+
+📖 [Learn more about the Mobile Promo Banner](./docs/mobile-promo-banner.md)
+
 ## 📖 Technologies Used
 
 - **Next.js 15** - React framework with App Router
