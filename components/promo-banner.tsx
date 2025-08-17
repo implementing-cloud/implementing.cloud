@@ -1,14 +1,6 @@
-import {
-  BellIcon,
-  CalendarIcon,
-  FileTextIcon,
-  GlobeIcon,
-  InputIcon,
-} from "@radix-ui/react-icons";
-
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
 import {CloudList3D} from "@/components/promo-banner/cloud-list"
-import { BrainCircuitIcon, CloudIcon, HandshakeIcon, ScaleIcon } from "lucide-react";
+import { BrainCircuitIcon, CloudIcon, NotebookPenIcon, ScaleIcon, TextCursorInputIcon } from "lucide-react";
 
 
 const features = [
@@ -19,25 +11,25 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: <CloudList3D />,
-    className: "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3",
+    className: "lg:row-start-1 lg:row-end-3 lg:col-start-2 lg:col-end-3",
   },
   {
-    Icon: InputIcon,
+    Icon: TextCursorInputIcon,
     name: "Implementation Guides",
     description: "Step-by-step tutorials on how to set up, PoC, deploy, and scale with real-world examples",
     href: "/",
     cta: "Learn more",
     background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
+    className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2",
   },
   {
     Icon: BrainCircuitIcon,
     name: "Learn AI, From Basics to Practical",
-    description: "From being a AI user, work with AI to build AI.",
+    description: "Overwhelmed by GPT vs Claude, RAG, Multi Agents, [insert new terms every day]? No worries. We got you!",
     href: "/",
     cta: "Learn more",
     background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
+    className: "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-3",
   },
   {
     Icon: ScaleIcon,
@@ -47,12 +39,12 @@ const features = [
     href: "/",
     cta: "Learn more",
     background: <img className="absolute -right-20 -top-20 opacity-60" />,
-    className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
+    className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-3",
   },
   {
-    Icon: HandshakeIcon,
-    name: "Contribute & Support",
-    description: "Share your experiences, request reviews, or support the project with a donation.",
+    Icon: NotebookPenIcon,
+    name: "Notes Built-in",
+    description: "We help you to learn. Press N to create a note or block text to highlight, in all page. Ctrl+K to search your notes or all resource pages",
     href: "/",
     cta: "Learn more",
     background: <img className="absolute -right-20 -top-20 opacity-60" />,

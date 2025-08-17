@@ -111,7 +111,7 @@ export default async function HomePage({
       </div>
 
       {/* Promo Banner Section */}
-      <PromoBanner />
+      {selectedTag === "All" && <PromoBanner />}
 
       {/* Articles Section */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
