@@ -51,12 +51,12 @@ export async function generateMetadata({
       ],
       authors: [
         {
-          name: page.data.author || "Magic UI",
+          name: page.data.author || "Implementing Cloud",
           url: siteConfig.url,
         },
       ],
-      creator: page.data.author || "Magic UI",
-      publisher: "Magic UI",
+      creator: page.data.author || "Implementing Cloud",
+      publisher: "Implementing Cloud",
       robots: {
         index: true,
         follow: true,
@@ -74,7 +74,7 @@ export async function generateMetadata({
         type: "article",
         url: ogUrl,
         publishedTime: page.data.date,
-        authors: [page.data.author || "Magic UI"],
+        authors: [page.data.author || "Implementing Cloud"],
         tags: page.data.tags,
         images: [
           {
@@ -91,8 +91,8 @@ export async function generateMetadata({
         title: page.data.title,
         description: page.data.description,
         images: [page.data.thumbnail || ogImage],
-        creator: "@dillionverma",
-        site: "@dillionverma",
+        creator: "@implementingcloud",
+        site: "@implementingcloud",
       },
       alternates: {
         canonical: ogUrl,

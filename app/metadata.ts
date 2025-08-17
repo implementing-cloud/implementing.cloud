@@ -2,19 +2,22 @@ import { Metadata } from "next";
 import { siteConfig } from "@/lib/site";
 
 export const metadataKeywords = [
-    "Blog",
-    "React",
-    "MagicUI Blog",
-    "MagicUI Blog Template",
-    "MagicUI Blog Template Next.js",
-    "MagicUI Blog Template Tailwind",
-    "MagicUI Blog Template Shadcn",
-    "Next.js Blog",
-    "React Blog",
-    "Web Development",
-    "Tutorials",
-    "MDX Blog",
-    "Modern Blog Template",
+    "Implementing Cloud",
+    "Cloud Computing",
+    "AWS",
+    "Azure",
+    "GCP",
+    "Infrastructure as Code",
+    "Terraform",
+    "Cloud Architecture",
+    "DevOps",
+    "Cloud Services",
+    "Cloud Comparison",
+    "Cloud Migration",
+    "Cloud Best Practices",
+    "AI Implementation",
+    "Machine Learning",
+    "Cloud Development",
 ]
 
 export const metadata: Metadata = {
@@ -23,11 +26,11 @@ export const metadata: Metadata = {
     keywords: metadataKeywords,
     authors: [
         {
-            name: "MagicUI Team",
-            url: "https://magicui.design",
+            name: "Implementing Cloud Team",
+            url: "https://implementingcloud.com",
         },
     ],
-    creator: "MagicUI",
+    creator: "Implementing Cloud",
     openGraph: {
         type: "website",
         locale: "en_US",
@@ -35,12 +38,21 @@ export const metadata: Metadata = {
         title: siteConfig.name,
         description: siteConfig.description,
         siteName: siteConfig.name,
+        images: [
+            {
+                url: "/ic-logo.png",
+                width: 1200,
+                height: 630,
+                alt: siteConfig.name,
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: siteConfig.name,
         description: siteConfig.description,
-        creator: "@magicui_design",
+        creator: "@implementingcloud",
+        images: ["/ic-logo.png"],
     },
     robots: {
         index: true,
