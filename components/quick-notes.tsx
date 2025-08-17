@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react"
 import { usePathname } from "next/navigation"
-import { MessageSquarePlus, X } from "lucide-react"
+import { NotebookPen, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface QuickNote {
   id: string
@@ -75,16 +76,20 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
     
     try {
       localStorage.setItem('quick-notes', JSON.stringify(updatedNotes))
+      toast.success("Note saved successfully!", {
+        duration: 3000,
+      })
     } catch (error) {
       console.error('Failed to save note:', error)
+      toast.error("Failed to save note")
     }
   }, [pathname, loadNotes, quotedText])
 
   // Handle keyboard events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only trigger C when not in input fields
-      if (e.key.toLowerCase() === 'c' && 
+      // Only trigger N when not in input fields
+      if (e.key.toLowerCase() === 'n' && 
           !isVisible && 
           !(e.target instanceof HTMLInputElement) && 
           !(e.target instanceof HTMLTextAreaElement) && 
@@ -150,7 +155,7 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
         className="fixed bottom-6 right-20 z-50 size-12 rounded-full shadow-lg hover:shadow-xl transition-shadow bg-primary hover:bg-primary/90"
         aria-label="Quick note"
       >
-        <MessageSquarePlus className="size-5" />
+        <NotebookPen className="size-5" />
       </Button>
 
       {/* Quick Note Input */}

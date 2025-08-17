@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MessageSquarePlus, Calendar, ExternalLink } from "lucide-react"
+import { NotebookPen, Calendar, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -55,7 +55,7 @@ export default function NotesPage() {
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <MessageSquarePlus className="size-8 text-primary" />
+        <NotebookPen className="size-8 text-primary" />
         <div>
           <h1 className="text-3xl font-bold">Quick Notes</h1>
           <p className="text-muted-foreground">All your captured thoughts and quotes</p>
@@ -64,10 +64,10 @@ export default function NotesPage() {
 
       {notes.length === 0 ? (
         <div className="text-center py-12">
-          <MessageSquarePlus className="size-16 text-muted-foreground/50 mx-auto mb-4" />
+          <NotebookPen className="size-16 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">No notes yet</h3>
           <p className="text-muted-foreground mb-4">
-            Start taking quick notes by pressing <kbd className="px-2 py-1 bg-muted rounded text-xs">C</kbd> anywhere on the site
+            Start taking quick notes by pressing <kbd className="px-2 py-1 bg-muted rounded text-xs">N</kbd> anywhere on the site
           </p>
         </div>
       ) : (

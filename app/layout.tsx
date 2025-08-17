@@ -6,10 +6,8 @@ import { siteConfig } from "@/lib/site";
 import { metadataKeywords } from "./metadata";
 import { SiteNav } from "@/components/site-nav";
 import Footer from "@/components/footer";
-import { NotesWrapper } from "@/components/notes-wrapper";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { NotesSidebar } from "@/components/notes-sidebar";
 import { QuickNotes } from "@/components/quick-notes";
+import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
 
 export const viewport: Viewport = {
@@ -44,16 +42,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={false}>
-            <SidebarInset>
-              <SiteNav />
-              {children}
-              <Footer />
-              <NotesWrapper />
-            </SidebarInset>
-            <NotesSidebar />
-          </SidebarProvider>
+          <div>
+            <SiteNav />
+            {children}
+            <Footer />
+          </div>
           <QuickNotes />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
