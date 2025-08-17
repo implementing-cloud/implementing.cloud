@@ -29,7 +29,7 @@ export function BlogCard({
         showRightBorder && "md:border-r border-border border-b-0"
       )}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
         {thumbnail && (
           <div className="relative w-full h-48 overflow-hidden">
             <Image
@@ -42,7 +42,7 @@ export function BlogCard({
           </div>
         )}
 
-        <div className="p-6 flex flex-col gap-2">
+        <div className="p-6 flex flex-col gap-2 flex-grow">
           <h3 className="text-xl font-semibold text-card-foreground">
             {title}
           </h3>
@@ -53,7 +53,7 @@ export function BlogCard({
         </div>
 
         {/* Action Buttons */}
-        <div className="absolute bottom-6 left-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="px-6 pb-6 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
           <Link
             href={url}
             className="flex items-center justify-center h-10 bg-primary text-primary-foreground rounded-md transition-all duration-300 ease-in-out hover:w-3/4 w-1/2 group/read"
