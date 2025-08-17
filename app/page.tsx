@@ -37,6 +37,7 @@ const formatDate = (date: Date): string => {
   });
 };
 
+
 export default async function HomePage({
   searchParams,
 }: {
@@ -95,7 +96,7 @@ export default async function HomePage({
               Discover, Compare and Implement <span>Latest Technology</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base lg:text-lg text-pretty">
-              No more endless tabs. No more FOMO. We’ve got you covered.
+              No more endless tabs. No more FOMO. We&apos;ve got you covered.
             </p>
           </div>
         </div>

@@ -6,6 +6,10 @@ import { siteConfig } from "@/lib/site";
 import { metadataKeywords } from "./metadata";
 import { SiteNav } from "@/components/site-nav";
 import Footer from "@/components/footer";
+import { NotesWrapper } from "@/components/notes-wrapper";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { NotesSidebar } from "@/components/notes-sidebar";
+import { NotesProvider } from "@/contexts/notes-context";
 import "@/app/globals.css";
 
 export const viewport: Viewport = {
@@ -40,9 +44,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SiteNav />
-          {children}
-          <Footer />
+          <NotesProvider>
+            <SidebarProvider defaultOpen={false}>
+              <SidebarInset>
+                <SiteNav />
+                {children}
+                <Footer />
+                <NotesWrapper />
+              </SidebarInset>
+              <NotesSidebar />
+            </SidebarProvider>
+          </NotesProvider>
         </ThemeProvider>
       </body>
     </html>

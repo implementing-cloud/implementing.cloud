@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SearchButton } from "@/components/search-button";
 
 export function SiteNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -131,7 +132,8 @@ export function SiteNav() {
               </svg>
             </button>
 
-            <div className="hidden md:block">
+            <div className="hidden md:flex items-center space-x-2">
+              <SearchButton />
               <ThemeToggle />
             </div>
           </nav>
@@ -207,11 +209,14 @@ export function SiteNav() {
               Login
             </Link>
             
-            {/* Theme Toggle for Mobile */}
+            {/* Search and Theme Toggle for Mobile */}
             <div className="pt-3 border-t border-slate-200/40 dark:border-white/20">
               <div className="flex items-center justify-between py-2">
-                <span className="text-slate-600 dark:text-slate-300 text-sm">Theme</span>
-                <ThemeToggle />
+                <span className="text-slate-600 dark:text-slate-300 text-sm">Search & Theme</span>
+                <div className="flex items-center space-x-2">
+                  <SearchButton />
+                  <ThemeToggle />
+                </div>
               </div>
             </div>
           </nav>
