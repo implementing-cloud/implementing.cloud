@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { NotebookPen, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { AnimatePresence, motion } from "motion/react"
 
 interface QuickNote {
   id: string
@@ -159,47 +160,58 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
       </Button>
 
       {/* Quick Note Input */}
-      {isVisible && (
-    <div className="fixed inset-x-0 bottom-0 md:bottom-0 md:top-auto top-16 z-50 animate-in slide-in-from-bottom-2 md:slide-in-from-bottom-2 slide-in-from-top-2 duration-300 ease-out">
-      <div className="mx-auto max-w-4xl px-4 pb-4 md:pb-4 pt-4 md:pt-0">
-        <div className="bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg relative">
-          <Button
-            onClick={() => {
-              setIsVisible(false)
-              setContent("")
-              setQuotedText("")
-            }}
-            size="icon"
-            variant="ghost"
-            className="absolute top-2 right-2 z-10 size-8 hover:bg-muted/50 md:hidden"
-            aria-label="Close quick note"
-          >
-            <X className="size-4" />
-          </Button>
-          {quotedText && (
-            <div className="px-4 pt-4 pb-2 border-b border-border/50">
-              <div className="text-xs text-muted-foreground mb-1">Quoted text:</div>
-              <div className="bg-muted/30 rounded px-3 py-2 text-sm border-l-2 border-primary/30 max-h-20 overflow-y-auto">
-                {quotedText}
+      <AnimatePresence>
+        {isVisible && (
+      // <div className="fixed inset-x-0 bottom-0 md:bottom-0 md:top-auto top-16 z-50 animate-in slide-in-from-bottom-2 md:slide-in-from-bottom-2 slide-in-from-top-2 duration-300 ease-out">
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}     // entry
+        animate={{ y: 0, opacity: 1 }}       // visible
+        exit={{ y: -20, opacity: 0 }}        // exit
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="fixed inset-x-0 z-50 
+                  top-16 md:top-auto md:bottom-0"
+      >
+        <div className="mx-auto max-w-4xl px-4 pb-4 md:pb-4 pt-4 md:pt-0">
+          <div className="bg-background/95 backdrop-blur-md border border-border rounded-lg shadow-lg relative">
+            <Button
+              onClick={() => {
+                setIsVisible(false)
+                setContent("")
+                setQuotedText("")
+              }}
+              size="icon"
+              variant="ghost"
+              className="absolute top-2 right-2 z-10 size-8 hover:bg-muted/50 md:hidden"
+              aria-label="Close quick note"
+            >
+              <X className="size-4" />
+            </Button>
+            {quotedText && (
+              <div className="px-4 pt-4 pb-2 border-b border-border/50">
+                <div className="text-xs text-muted-foreground mb-1">Quoted text:</div>
+                <div className="bg-muted/30 rounded px-3 py-2 text-sm border-l-2 border-primary/30 max-h-20 overflow-y-auto">
+                  {quotedText}
+                </div>
               </div>
+            )}
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={handleContentChange}
+              onKeyDown={handleTextareaKeyDown}
+              placeholder={`Quick note for ${pathname} - Press Enter to save, Shift+Enter for new line, Esc to cancel`}
+              className="w-full min-h-[60px] max-h-[200px] p-4 bg-transparent border-none outline-none resize-none placeholder:text-muted-foreground text-sm"
+              rows={1}
+            />
+            <div className="px-4 pb-3 text-xs text-muted-foreground">
+              Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Enter</kbd> to save • <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Shift+Enter</kbd> for new line • <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Esc</kbd> to cancel
             </div>
-          )}
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={handleContentChange}
-            onKeyDown={handleTextareaKeyDown}
-            placeholder={`Quick note for ${pathname} - Press Enter to save, Shift+Enter for new line, Esc to cancel`}
-            className="w-full min-h-[60px] max-h-[200px] p-4 bg-transparent border-none outline-none resize-none placeholder:text-muted-foreground text-sm"
-            rows={1}
-          />
-          <div className="px-4 pb-3 text-xs text-muted-foreground">
-            Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Enter</kbd> to save • <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Shift+Enter</kbd> for new line • <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">Esc</kbd> to cancel
           </div>
         </div>
-      </div>
-    </div>
-      )}
+      {/* </div> */}
+      </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 })
