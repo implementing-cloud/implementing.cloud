@@ -11,6 +11,7 @@ import { ComparisonTable } from "@/components/comparison-table";
 import { CategoryComparisonTable } from "@/components/category-comparison-table";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { Button } from "@/components/ui/button";
+import { ArrowLeftIcon, TableIcon } from "lucide-react";
 import Link from "next/link";
 
 interface ComparePageProps {
@@ -114,13 +115,43 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
 
   if (type === "service") {
     const serviceNames = services.map(s => s.name);
-    title = `${serviceNames.join(" vs ")} Comparison`;
-    description = `Compare ${serviceNames.join(", ")} features, pricing, and capabilities side by side. Find the best service for your needs.`;
+    
+    if (services.length === 1) {
+      title = `Deep Dive to ${serviceNames[0]}`;
+      description = `In this deep dive, we'll explore ${serviceNames[0]} in detail. Discover its features, pricing, and capabilities to see if it's suitable for you.`;
+    } else if (services.length <= 3) {
+      title = `${serviceNames.join(" vs ")} Comparison`;
+      if (services.length === 2) {
+        description = `In this comparison, we will compare ${serviceNames[0]} with ${serviceNames[1]}. Let's see what is the most suitable for you.`;
+      } else {
+        description = `In this comparison, we will compare ${serviceNames[0]} with ${serviceNames[1]}, and ${serviceNames[2]}. Let's see what is the most suitable for you.`;
+      }
+    } else {
+      title = `${serviceNames[0]} vs ${services.length - 1} other services compared`;
+      const otherServices = serviceNames.slice(1);
+      const lastService = otherServices.pop();
+      description = `In this opportunity, we will compare ${serviceNames[0]} with ${otherServices.join(", ")}${otherServices.length > 0 ? ', and ' : ''}${lastService}. Let's see what is the most suitable for you.`;
+    }
   } else {
     const categoryNames = categoryData.map(c => c.name);
     const parentName = getParentCategoryName(parentCategory!);
-    title = `${categoryNames.join(" vs ")} Comparison - ${parentName}`;
-    description = `Compare ${categoryNames.join(", ")} architectural concepts and fundamental differences. Understand which ${parentName.toLowerCase()} approach fits your technical requirements.`;
+    
+    if (categoryData.length === 1) {
+      title = `Deep Dive to ${categoryNames[0]} - ${parentName}`;
+      description = `In this deep dive, we'll explore ${categoryNames[0]} concepts in detail. Understand this ${parentName.toLowerCase()} approach and see if it fits your technical requirements.`;
+    } else if (categoryData.length <= 3) {
+      title = `${categoryNames.join(" vs ")} Comparison - ${parentName}`;
+      if (categoryData.length === 2) {
+        description = `In this comparison, we will compare ${categoryNames[0]} with ${categoryNames[1]}. Let's understand which ${parentName.toLowerCase()} approach fits your technical requirements.`;
+      } else {
+        description = `In this comparison, we will compare ${categoryNames[0]} with ${categoryNames[1]}, and ${categoryNames[2]}. Let's understand which ${parentName.toLowerCase()} approach fits your technical requirements.`;
+      }
+    } else {
+      title = `${categoryNames[0]} vs ${categoryData.length - 1} other ${parentName.toLowerCase()} concepts compared`;
+      const otherCategories = categoryNames.slice(1);
+      const lastCategory = otherCategories.pop();
+      description = `In this opportunity, we will compare ${categoryNames[0]} with ${otherCategories.join(", ")}${otherCategories.length > 0 ? ', and ' : ''}${lastCategory} architectural concepts. Let's understand which ${parentName.toLowerCase()} approach fits your technical requirements.`;
+    }
   }
 
   return {
@@ -146,13 +177,44 @@ export default async function CompareParamsPage({ params }: ComparePageProps) {
   let description: string;
 
   if (type === "service") {
-    title = `${services.map(s => s.name).join(" vs ")} Comparison`;
-    description = `Comparing ${services.length} cloud services`;
+    const serviceNames = services.map(s => s.name);
+    
+    if (services.length === 1) {
+      title = `Deep Dive to ${serviceNames[0]}`;
+      description = `In this deep dive, we'll explore ${serviceNames[0]} in detail`;
+    } else if (services.length <= 3) {
+      title = `${serviceNames.join(" vs ")} Comparison`;
+      if (services.length === 2) {
+        description = `In this comparison, we will compare ${serviceNames[0]} with ${serviceNames[1]}`;
+      } else {
+        description = `In this comparison, we will compare ${serviceNames[0]} with ${serviceNames[1]}, and ${serviceNames[2]}`;
+      }
+    } else {
+      title = `${serviceNames[0]} vs ${services.length - 1} other services compared`;
+      const otherServices = serviceNames.slice(1);
+      const lastService = otherServices.pop();
+      description = `In this opportunity, we will compare ${serviceNames[0]} with ${otherServices.join(", ")}${otherServices.length > 0 ? ', and ' : ''}${lastService}`;
+    }
   } else {
     const categoryNames = categoryData.map(c => c.name);
     const parentName = getParentCategoryName(parentCategory!);
-    title = `${categoryNames.join(" vs ")} Comparison`;
-    description = `Comparing architectural concepts in ${parentName}`;
+    
+    if (categoryData.length === 1) {
+      title = `Deep Dive to ${categoryNames[0]} - ${parentName}`;
+      description = `In this deep dive, we'll explore ${categoryNames[0]} concepts in detail`;
+    } else if (categoryData.length <= 3) {
+      title = `${categoryNames.join(" vs ")} Comparison`;
+      if (categoryData.length === 2) {
+        description = `In this comparison, we will compare ${categoryNames[0]} with ${categoryNames[1]}`;
+      } else {
+        description = `In this comparison, we will compare ${categoryNames[0]} with ${categoryNames[1]}, and ${categoryNames[2]}`;
+      }
+    } else {
+      title = `${categoryNames[0]} vs ${categoryData.length - 1} other ${parentName.toLowerCase()} concepts compared`;
+      const otherCategories = categoryNames.slice(1);
+      const lastCategory = otherCategories.pop();
+      description = `In this opportunity, we will compare ${categoryNames[0]} with ${otherCategories.join(", ")}${otherCategories.length > 0 ? ', and ' : ''}${lastCategory}`;
+    }
   }
 
   return (
@@ -169,16 +231,25 @@ export default async function CompareParamsPage({ params }: ComparePageProps) {
       </div>
       
       <div className="border-b border-border p-6 relative z-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-4 flex items-center gap-3">
+            <Link href="/compare">
+              <Button variant="outline" className="flex items-center gap-2">
+                <ArrowLeftIcon className="h-4 w-4" />
+                Back to Compare
+              </Button>
+            </Link>
+            <Link href={`/compare/simplified/${resolvedParams.params.join("/")}`}>
+              <Button variant="outline" className="flex items-center gap-2">
+                <TableIcon className="h-4 w-4" />
+                Simplified view
+              </Button>
+            </Link>
+          </div>
           <div>
             <h1 className="text-3xl font-medium tracking-tight">{title}</h1>
             <p className="text-muted-foreground mt-1">{description}</p>
           </div>
-          <Link href="/compare">
-            <Button variant="outline">
-              Back to Compare
-            </Button>
-          </Link>
         </div>
       </div>
 

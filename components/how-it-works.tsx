@@ -38,7 +38,7 @@ export function HowItWorks() {
       
       <div className="space-y-16">
         {steps.map((step, index) => (
-          <div key={index} className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          <div key={index} className="flex flex-col lg:flex-row lg:items-start items-center gap-8 lg:gap-12">
             <div className="flex-1 space-y-4">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium">

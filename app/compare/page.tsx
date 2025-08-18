@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { ComparisonTable } from "@/components/comparison-table";
 import { parentCategories } from "@/lib/comparison-data";
 import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
+import { Search, X, TableIcon } from "lucide-react";
 
 export default function ComparePage() {
   const router = useRouter();
@@ -117,6 +117,25 @@ export default function ComparePage() {
       const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedChildCategories);
       if (categoryUrl) {
         router.push(categoryUrl);
+      }
+    }
+  };
+
+  const handleCompareSimplified = () => {
+    if (selectedServices.length >= 1) {
+      // Navigate to simplified comparison URL
+      const comparisonUrl = generateComparisonUrl(selectedServices);
+      if (comparisonUrl) {
+        router.push(`/compare/simplified${comparisonUrl.replace('/compare', '')}`);
+      }
+    }
+  };
+
+  const handleCompareCategoriesSimplified = () => {
+    if (selectedChildCategories.length >= 1) {
+      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedChildCategories);
+      if (categoryUrl) {
+        router.push(`/compare/simplified${categoryUrl.replace('/compare', '')}`);
       }
     }
   };
@@ -268,7 +287,7 @@ export default function ComparePage() {
                 </Button>
                 <Button 
                   onClick={handleCompareCategories}
-                  variant="secondary"
+                  variant={selectedChildCategories.length === 0 ? "outline" : "default"}
                   disabled={selectedChildCategories.length === 0}
                 >
                   {selectedChildCategories.length === 0 
@@ -322,6 +341,18 @@ export default function ComparePage() {
                   {selectedServices.length === 0 
                     ? "Please select a service" 
                     : `Compare ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`
+                  }
+                </Button>
+                <Button 
+                  onClick={handleCompareSimplified}
+                  variant={selectedServices.length === 0 ? "outline" : "default"}
+                  disabled={selectedServices.length === 0}
+                  className="flex items-center gap-2"
+                >
+                  <TableIcon className="h-4 w-4" />
+                  {selectedServices.length === 0 
+                    ? "Select a service" 
+                    : "Compare Simplified"
                   }
                 </Button>
               </div>
