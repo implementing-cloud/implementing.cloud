@@ -8,7 +8,7 @@ import { SearchButton } from "@/components/search-button";
 
 export function SiteNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
+  const [isExploreOpen, setIsExploreOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -47,14 +47,14 @@ export function SiteNav() {
                 Home
               </Link>
               
-              {/* Roadmap Dropdown */}
+              {/* Explore Dropdown */}
               <div 
                 className="relative"
-                onMouseEnter={() => setIsRoadmapOpen(true)}
-                onMouseLeave={() => setIsRoadmapOpen(false)}
+                onMouseEnter={() => setIsExploreOpen(true)}
+                onMouseLeave={() => setIsExploreOpen(false)}
               >
                 <button className="flex items-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                  Roadmap
+                  Explore
                   <svg
                     className="ml-1 w-4 h-4"
                     fill="none"
@@ -70,19 +70,19 @@ export function SiteNav() {
                   </svg>
                 </button>
                 
-                {isRoadmapOpen && (
+                {isExploreOpen && (
                   <div className="absolute top-full left-0 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md shadow-lg py-2 z-50">
                     <Link
-                      href="/roadmap/implementing-cloud-service"
+                      href="/services"
                       className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
-                      Implementing Cloud Service
+                      Services and Tools
                     </Link>
                     <Link
-                      href="/roadmap/implementing-ai"
+                      href="/providers"
                       className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
-                      Implementing AI
+                      Providers
                     </Link>
                   </div>
                 )}
@@ -93,6 +93,12 @@ export function SiteNav() {
                 className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 Compare
+              </Link>
+              <Link
+                href="/glossary"
+                className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                Glossary
               </Link>
               <Link
                 href="/notes"
@@ -158,15 +164,15 @@ export function SiteNav() {
               Home
             </Link>
             
-            {/* Mobile Roadmap Dropdown */}
+            {/* Mobile Explore Dropdown */}
             <div>
               <button
-                onClick={() => setIsRoadmapOpen(!isRoadmapOpen)}
+                onClick={() => setIsExploreOpen(!isExploreOpen)}
                 className="flex items-center justify-between w-full text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-2"
               >
-                Roadmap
+                Explore
                 <svg
-                  className={`w-4 h-4 transition-transform ${isRoadmapOpen ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 transition-transform ${isExploreOpen ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -180,21 +186,21 @@ export function SiteNav() {
                 </svg>
               </button>
               
-              {isRoadmapOpen && (
+              {isExploreOpen && (
                 <div className="ml-4 space-y-2 mt-2">
                   <Link
-                    href="/roadmap/implementing-cloud-service"
+                    href="/services"
                     className="block text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors py-1 text-sm"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Implementing Cloud Service
+                    Services and Tools
                   </Link>
                   <Link
-                    href="/roadmap/implementing-ai"
+                    href="/providers"
                     className="block text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors py-1 text-sm"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Implementing AI
+                    Providers
                   </Link>
                 </div>
               )}
@@ -206,6 +212,13 @@ export function SiteNav() {
               onClick={() => setIsMenuOpen(false)}
             >
               Compare
+            </Link>
+            <Link
+              href="/glossary"
+              className="block text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Glossary
             </Link>
             <Link
               href="/notes"

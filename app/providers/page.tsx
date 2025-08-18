@@ -2,12 +2,9 @@ import { docs, meta } from "@/.source";
 import { loader } from "fumadocs-core/source";
 import { createMDXSource } from "fumadocs-mdx";
 import { Suspense } from "react";
-import Link from "next/link";
 import { BlogCard } from "@/components/blog-card";
 import { TagFilter } from "@/components/tag-filter";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-import { PromoBanner } from "@/components/promo-banner";
-import { HowItWorks } from "@/components/how-it-works";
 
 interface BlogData {
   title: string;
@@ -39,8 +36,12 @@ const formatDate = (date: Date): string => {
   });
 };
 
-
-export default async function HomePage() {
+export default async function ProvidersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tag?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
   const allPages = blogSource.getPages() as BlogPage[];
   const sortedBlogs = allPages.sort((a, b) => {
     const dateA = new Date(a.data.date).getTime();
@@ -54,6 +55,12 @@ export default async function HomePage() {
       new Set(sortedBlogs.flatMap((blog) => blog.data.tags || []))
     ).sort(),
   ];
+
+  const selectedTag = resolvedSearchParams.tag || "All";
+  const filteredBlogs =
+    selectedTag === "All"
+      ? sortedBlogs
+      : sortedBlogs.filter((blog) => blog.data.tags?.includes(selectedTag));
 
   const tagCounts = allTags.reduce((acc, tag) => {
     if (tag === "All") {
@@ -84,10 +91,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col gap-2">
             <h1 className="font-medium text-4xl md:text-5xl tracking-tighter text-pretty">
-              Discover, Compare and Implement <span>Latest Technology</span>
+              Cloud <span>Providers</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base lg:text-lg text-pretty">
-              No more endless tabs. No more FOMO. We&apos;ve got you covered.
+              Discover leading cloud service providers and their platform offerings.
             </p>
           </div>
         </div>
@@ -95,28 +102,30 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto w-full">
             <TagFilter
               tags={allTags}
-              selectedTag="All"
+              selectedTag={selectedTag}
               tagCounts={tagCounts}
             />
           </div>
         )}
       </div>
 
-      {/* Promo Banner Section */}
-      <PromoBanner />
-
       {/* Articles Section */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-4">
         <div className="py-8">
-          <h2 className="text-2xl font-medium tracking-tight mb-6">You might interest</h2>
+          <h2 className="text-2xl font-medium tracking-tight mb-6">
+            {selectedTag === "All" 
+              ? `All Providers (${filteredBlogs.length})` 
+              : `${selectedTag} Providers (${filteredBlogs.length})`
+            }
+          </h2>
         </div>
-        <Suspense fallback={<div>Loading articles...</div>}>
+        <Suspense fallback={<div>Loading providers...</div>}>
           <div
             className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative overflow-hidden border-x border-border ${
-              sortedBlogs.length < 4 ? "border-b" : "border-b-0"
+              filteredBlogs.length < 4 ? "border-b" : "border-b-0"
             }`}
           >
-            {sortedBlogs.map((blog) => {
+            {filteredBlogs.map((blog) => {
               const date = new Date(blog.data.date);
               const formattedDate = formatDate(date);
 
@@ -128,32 +137,13 @@ export default async function HomePage() {
                   description={blog.data.description}
                   date={formattedDate}
                   thumbnail={blog.data.thumbnail}
-                  showRightBorder={sortedBlogs.length < 3}
+                  showRightBorder={filteredBlogs.length < 3}
                 />
               );
             })}
           </div>
         </Suspense>
-
-        {/* Load More CTAs */}
-        <div className="py-8 flex justify-center gap-4">
-          <Link 
-            href="/services"
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-          >
-            Show {sortedBlogs.length} more services and tools
-          </Link>
-          <Link 
-            href="/providers"
-            className="px-6 py-3 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/90 transition-colors"
-          >
-            Browse Providers
-          </Link>
-        </div>
       </div>
-
-      {/* How it works Section */}
-      <HowItWorks />
     </div>
   );
 }

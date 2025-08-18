@@ -9,7 +9,7 @@ import { PromoContent } from "@/components/promo-content";
 export function MobileTableOfContents() {
   return (
     <Drawer>
-      <DrawerTrigger className="lg:hidden fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors">
+      <DrawerTrigger className="lg:hidden fixed bottom-20 right-6 z-50 bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors">
         <List size={20} />
       </DrawerTrigger>
 

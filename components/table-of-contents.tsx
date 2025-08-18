@@ -18,9 +18,45 @@ export function TableOfContents({ className }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
-    const headingElements = document.querySelectorAll("h1, h2");
-    const headingsArray: Heading[] = [];
+    // Only look for headings within main content areas, excluding UI components
+    const contentSelectors = [
+      "main h1, main h2",
+      "article h1, article h2", 
+      ".prose h1, .prose h2",
+      "[role='main'] h1, [role='main'] h2"
+    ];
+    
+    let headingElements: NodeListOf<Element> | null = null;
+    
+    // Try each selector until we find headings
+    for (const selector of contentSelectors) {
+      const elements = document.querySelectorAll(selector);
+      if (elements.length > 0) {
+        headingElements = elements;
+        break;
+      }
+    }
+    
+    // Fallback to all headings but exclude known UI components
+    if (!headingElements || headingElements.length === 0) {
+      const allHeadings = document.querySelectorAll("h1, h2");
+      const filteredHeadings: Element[] = [];
+      
+      allHeadings.forEach((element) => {
+        const text = element.textContent || "";
+        // Exclude common UI component headings
+        if (!text.includes("Command Palette") && 
+            !element.closest('[role="dialog"]') &&
+            !element.closest('.command-palette') &&
+            !element.closest('nav')) {
+          filteredHeadings.push(element);
+        }
+      });
+      
+      headingElements = filteredHeadings as any;
+    }
 
+    const headingsArray: Heading[] = [];
     headingElements.forEach((element) => {
       if (element.id) {
         headingsArray.push({
@@ -36,42 +72,38 @@ export function TableOfContents({ className }: TableOfContentsProps) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      () => {
-        const headingPositions = headings.map((heading) => {
-          const element = document.getElementById(heading.id);
-          return {
-            id: heading.id,
-            top: element ? element.getBoundingClientRect().top : Infinity,
-          };
-        });
+      (entries) => {
+        const visibleEntries = entries.filter(entry => entry.isIntersecting);
+        
+        if (visibleEntries.length > 0) {
+          // Find the topmost visible heading
+          const topEntry = visibleEntries.reduce((top, entry) => {
+            return entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top;
+          });
+          
+          setActiveId(topEntry.target.id);
+        } else {
+          // If no headings are visible, find the closest one above the viewport
+          const headingPositions = headings.map((heading) => {
+            const element = document.getElementById(heading.id);
+            return {
+              id: heading.id,
+              top: element ? element.getBoundingClientRect().top : Infinity,
+            };
+          });
 
-        let activeHeading = headingPositions.find(
-          (heading) => heading.top >= 0 && heading.top <= 100
-        );
-
-        if (!activeHeading) {
           const headingsAbove = headingPositions
             .filter((heading) => heading.top < 0)
             .sort((a, b) => b.top - a.top);
 
-          activeHeading = headingsAbove[0];
-        }
-
-        if (!activeHeading) {
-          const headingsBelow = headingPositions
-            .filter((heading) => heading.top > 100)
-            .sort((a, b) => a.top - b.top);
-
-          activeHeading = headingsBelow[0];
-        }
-
-        if (activeHeading && activeHeading.id !== activeId) {
-          setActiveId(activeHeading.id);
+          if (headingsAbove.length > 0) {
+            setActiveId(headingsAbove[0].id);
+          }
         }
       },
       {
         root: null,
-        rootMargin: "-100px",
+        rootMargin: "-100px 0px -70% 0px",
         threshold: 0,
       }
     );
@@ -83,46 +115,8 @@ export function TableOfContents({ className }: TableOfContentsProps) {
       }
     });
 
-    const handleScroll = () => {
-      const headingPositions = headings.map((heading) => {
-        const element = document.getElementById(heading.id);
-        return {
-          id: heading.id,
-          top: element ? element.getBoundingClientRect().top : Infinity,
-        };
-      });
-
-      let activeHeading = headingPositions.find(
-        (heading) => heading.top >= -50 && heading.top <= 100
-      );
-
-      if (!activeHeading) {
-        const headingsAbove = headingPositions
-          .filter((heading) => heading.top < -50)
-          .sort((a, b) => b.top - a.top);
-
-        activeHeading = headingsAbove[0];
-      }
-
-      if (activeHeading && activeHeading.id !== activeId) {
-        setActiveId(activeHeading.id);
-      }
-    };
-
-    let scrollTimeout: NodeJS.Timeout;
-    const throttledScroll = () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 10);
-    };
-
-    window.addEventListener("scroll", throttledScroll, { passive: true });
-
-    handleScroll();
-
     return () => {
       observer.disconnect();
-      window.removeEventListener("scroll", throttledScroll);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [headings, activeId]);
 
@@ -131,10 +125,21 @@ export function TableOfContents({ className }: TableOfContentsProps) {
 
     window.history.pushState({}, '', `#${id}`);
 
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch (err) {
-      console.error(err);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch (err) {
+        console.error("Clipboard API failed:", err);
+        // Fall back to textarea method
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+    } else {
+      // Fallback for browsers without Clipboard API
       const textArea = document.createElement("textarea");
       textArea.value = url;
       document.body.appendChild(textArea);

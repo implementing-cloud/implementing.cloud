@@ -19,7 +19,7 @@ export default function ComparePage() {
     'parent', 
     parseAsString.withDefault(parentCategories[0].id)
   );
-  const [selectedChildCategories, setSelectedChildCategories] = useQueryState(
+  const [selectedSubCategories, setSelectedSubCategories] = useQueryState(
     'children', 
     parseAsArrayOf(parseAsString).withDefault([])
   );
@@ -35,12 +35,16 @@ export default function ComparePage() {
     'search',
     parseAsString.withDefault('')
   );
+  const [subCategorySearchQuery, setSubCategorySearchQuery] = useQueryState(
+    'subSearch',
+    parseAsString.withDefault('')
+  );
 
   const currentParentCategory = parentCategories.find(cat => cat.id === selectedParentCategory);
   
-  // Get all services from selected child categories
+  // Get all services from selected sub categories
   const allAvailableServices = currentParentCategory?.childCategories
-    .filter(child => selectedChildCategories.length === 0 || selectedChildCategories.includes(child.id))
+    .filter(child => selectedSubCategories.length === 0 || selectedSubCategories.includes(child.id))
     .flatMap(child => child.services) || [];
 
   // Filter services based on search query
@@ -62,11 +66,11 @@ export default function ComparePage() {
     selectedServices.includes(service.id)
   );
 
-  const toggleChildCategorySelection = (childCategoryId: string) => {
-    setSelectedChildCategories(prev => 
-      prev.includes(childCategoryId) 
-        ? prev.filter(id => id !== childCategoryId)
-        : [...prev, childCategoryId]
+  const toggleSubCategorySelection = (subCategoryId: string) => {
+    setSelectedSubCategories(prev => 
+      prev.includes(subCategoryId) 
+        ? prev.filter(id => id !== subCategoryId)
+        : [...prev, subCategoryId]
     );
     // Clear selected services when changing categories
     setSelectedServices([]);
@@ -91,10 +95,10 @@ export default function ComparePage() {
   };
 
   // Generate category comparison URL
-  const generateCategoryComparisonUrl = (parentCat: string, childCats: string[]) => {
-    if (childCats.length === 0) return;
+  const generateCategoryComparisonUrl = (parentCat: string, subCats: string[]) => {
+    if (subCats.length === 0) return;
     
-    const sortedCategories = [...childCats].sort();
+    const sortedCategories = [...subCats].sort();
     const urlSlug = sortedCategories.join('-vs-');
     return `/compare/category/${parentCat}/${urlSlug}`;
   };
@@ -113,8 +117,8 @@ export default function ComparePage() {
   };
 
   const handleCompareCategories = () => {
-    if (selectedChildCategories.length >= 1) {
-      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedChildCategories);
+    if (selectedSubCategories.length >= 1) {
+      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedSubCategories);
       if (categoryUrl) {
         router.push(categoryUrl);
       }
@@ -132,8 +136,8 @@ export default function ComparePage() {
   };
 
   const handleCompareCategoriesSimplified = () => {
-    if (selectedChildCategories.length >= 1) {
-      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedChildCategories);
+    if (selectedSubCategories.length >= 1) {
+      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedSubCategories);
       if (categoryUrl) {
         router.push(`/compare/simplified${categoryUrl.replace('/compare', '')}`);
       }
@@ -146,23 +150,23 @@ export default function ComparePage() {
 
   const handleParentCategoryChange = (parentCategoryId: string) => {
     setSelectedParentCategory(parentCategoryId);
-    setSelectedChildCategories([]);
+    setSelectedSubCategories([]);
     setSelectedServices([]);
   };
 
   // Select All functionality
-  const handleSelectAllChildCategories = () => {
+  const handleSelectAllSubCategories = () => {
     if (!currentParentCategory) return;
     
-    const allChildIds = currentParentCategory.childCategories.map(child => child.id);
-    const isAllSelected = allChildIds.every(id => selectedChildCategories.includes(id));
+    const allSubIds = currentParentCategory.childCategories.map(child => child.id);
+    const isAllSelected = allSubIds.every(id => selectedSubCategories.includes(id));
     
     if (isAllSelected) {
       // Deselect all
-      setSelectedChildCategories([]);
+      setSelectedSubCategories([]);
     } else {
       // Select all
-      setSelectedChildCategories(allChildIds);
+      setSelectedSubCategories(allSubIds);
     }
     // Clear services when changing categories
     setSelectedServices([]);
@@ -185,9 +189,13 @@ export default function ComparePage() {
     setSearchQuery('');
   };
 
+  const handleClearSubCategorySearch = () => {
+    setSubCategorySearchQuery('');
+  };
+
   // Check if all items are selected for button text
-  const allChildCategoriesSelected = currentParentCategory ? 
-    currentParentCategory.childCategories.every(child => selectedChildCategories.includes(child.id)) : false;
+  const allSubCategoriesSelected = currentParentCategory ? 
+    currentParentCategory.childCategories.every(child => selectedSubCategories.includes(child.id)) : false;
   
   const allServicesSelected = availableServices.length > 0 ? 
     availableServices.every(service => selectedServices.includes(service.id)) : false;
@@ -247,7 +255,7 @@ export default function ComparePage() {
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-medium tracking-tight">Compare Services</h1>
           <p className="text-muted-foreground mt-1">
-            Select a parent category, child categories, and services to compare side by side
+            Select a parent category, sub categories, and services to compare side by side
           </p>
         </div>
       </div>
@@ -270,48 +278,103 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {/* Child Category Selection */}
+        {/* Sub Category Selection */}
         {currentParentCategory && (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-medium">
-                Select Child Categories ({selectedChildCategories.length} selected)
-              </h2>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleSelectAllChildCategories}
-                  variant="outline"
-                  size="sm"
-                >
-                  {allChildCategoriesSelected ? "Deselect All" : "Select All"}
-                </Button>
-                <Button 
-                  onClick={handleCompareCategories}
-                  variant={selectedChildCategories.length === 0 ? "outline" : "default"}
-                  disabled={selectedChildCategories.length === 0}
-                >
-                  {selectedChildCategories.length === 0 
-                    ? "Please select categories" 
-                    : `Compare ${selectedChildCategories.length} Categor${selectedChildCategories.length !== 1 ? 'ies' : 'y'}`
-                  }
-                </Button>
-              </div>
+            <h2 className="text-xl font-medium mb-4">
+              Select Sub Categories ({selectedSubCategories.length} selected)
+            </h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button 
+                onClick={handleSelectAllSubCategories}
+                variant="outline"
+                size="sm"
+              >
+                {allSubCategoriesSelected ? "Deselect All" : "Select All"}
+              </Button>
+              <Button 
+                onClick={handleCompareCategories}
+                variant={selectedSubCategories.length === 0 ? "outline" : "default"}
+                disabled={selectedSubCategories.length === 0}
+              >
+                {selectedSubCategories.length === 0 
+                  ? "Please select categories" 
+                  : `Compare ${selectedSubCategories.length} Categor${selectedSubCategories.length !== 1 ? 'ies' : 'y'}`
+                }
+              </Button>
             </div>
+            
+            {/* Sub Category Search Input */}
+            <div className="mb-4">
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search sub categories..."
+                  value={subCategorySearchQuery}
+                  onChange={(e) => setSubCategorySearchQuery(e.target.value)}
+                  className="pl-10 pr-10"
+                />
+                {subCategorySearchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSubCategorySearch}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-auto p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+              {subCategorySearchQuery && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Found {currentParentCategory.childCategories.filter(cat => 
+                    cat.name.toLowerCase().includes(subCategorySearchQuery.toLowerCase()) ||
+                    cat.id.toLowerCase().includes(subCategorySearchQuery.toLowerCase())
+                  ).length} sub categor{currentParentCategory.childCategories.filter(cat => 
+                    cat.name.toLowerCase().includes(subCategorySearchQuery.toLowerCase()) ||
+                    cat.id.toLowerCase().includes(subCategorySearchQuery.toLowerCase())
+                  ).length !== 1 ? 'ies' : 'y'} matching &quot;{subCategorySearchQuery}&quot;
+                  {currentParentCategory.childCategories.filter(cat => 
+                    cat.name.toLowerCase().includes(subCategorySearchQuery.toLowerCase()) ||
+                    cat.id.toLowerCase().includes(subCategorySearchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={handleClearSubCategorySearch}
+                      className="h-auto p-0 ml-2"
+                    >
+                      Clear search
+                    </Button>
+                  )}
+                </p>
+              )}
+            </div>
+            
             <div className="flex flex-wrap gap-3">
-              {currentParentCategory.childCategories.map(childCategory => (
+              {currentParentCategory.childCategories
+                .filter(subCategory => {
+                  if (!subCategorySearchQuery.trim()) return true;
+                  const query = subCategorySearchQuery.toLowerCase();
+                  return (
+                    subCategory.name.toLowerCase().includes(query) ||
+                    subCategory.id.toLowerCase().includes(query)
+                  );
+                })
+                .map(subCategory => (
                 <Button
-                  key={childCategory.id}
-                  variant={selectedChildCategories.includes(childCategory.id) ? "default" : "outline"}
-                  onClick={() => toggleChildCategorySelection(childCategory.id)}
+                  key={subCategory.id}
+                  variant={selectedSubCategories.includes(subCategory.id) ? "default" : "outline"}
+                  onClick={() => toggleSubCategorySelection(subCategory.id)}
                   className="h-auto p-3"
                 >
-                  {childCategory.name}
+                  {subCategory.name}
                 </Button>
               ))}
             </div>
-            {selectedChildCategories.length === 0 && (
+            {selectedSubCategories.length === 0 && (
               <p className="text-sm text-muted-foreground mt-2">
-                No child categories selected - showing all services from {currentParentCategory.name}
+                No sub categories selected - showing all services from {currentParentCategory.name}
               </p>
             )}
           </div>
@@ -320,42 +383,40 @@ export default function ComparePage() {
         {/* Services Grid */}
         {allAvailableServices.length > 0 && (
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-medium">
-                Select Services to Compare ({selectedServices.length} selected)
-              </h2>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={handleSelectAllServices}
-                  variant="outline"
-                  size="sm"
-                  disabled={availableServices.length === 0}
-                >
-                  {allServicesSelected ? "Deselect All" : "Select All"}
-                </Button>
-                <Button 
-                  onClick={handleCompare}
-                  disabled={selectedServices.length === 0}
-                  variant={selectedServices.length === 0 ? "outline" : "default"}
-                >
-                  {selectedServices.length === 0 
-                    ? "Please select a service" 
-                    : `Compare ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`
-                  }
-                </Button>
-                <Button 
-                  onClick={handleCompareSimplified}
-                  variant={selectedServices.length === 0 ? "outline" : "default"}
-                  disabled={selectedServices.length === 0}
-                  className="flex items-center gap-2"
-                >
-                  <TableIcon className="h-4 w-4" />
-                  {selectedServices.length === 0 
-                    ? "Select a service" 
-                    : "Compare Simplified"
-                  }
-                </Button>
-              </div>
+            <h2 className="text-xl font-medium mb-4">
+              Select Services to Compare ({selectedServices.length} selected)
+            </h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button 
+                onClick={handleSelectAllServices}
+                variant="outline"
+                size="sm"
+                disabled={availableServices.length === 0}
+              >
+                {allServicesSelected ? "Deselect All" : "Select All"}
+              </Button>
+              <Button 
+                onClick={handleCompare}
+                disabled={selectedServices.length === 0}
+                variant={selectedServices.length === 0 ? "outline" : "default"}
+              >
+                {selectedServices.length === 0 
+                  ? "Please select a service" 
+                  : `Compare ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`
+                }
+              </Button>
+              <Button 
+                onClick={handleCompareSimplified}
+                variant={selectedServices.length === 0 ? "outline" : "default"}
+                disabled={selectedServices.length === 0}
+                className="flex items-center gap-2"
+              >
+                <TableIcon className="h-4 w-4" />
+                {selectedServices.length === 0 
+                  ? "Select a service" 
+                  : "Compare Simplified"
+                }
+              </Button>
             </div>
 
             {/* Search Input */}

@@ -25,7 +25,14 @@ export function TagFilter({ tags, selectedTag, tagCounts }: TagFilterProps) {
     if (tag !== "All") {
       params.set("tag", tag);
     }
-    router.push(`${pathname}?${params.toString()}`);
+    
+    // If we're on homepage, navigate to services page with tag
+    if (pathname === "/") {
+      router.push(`/services?${params.toString()}`);
+    } else {
+      // If we're already on services page, filter in place
+      router.push(`${pathname}?${params.toString()}`);
+    }
   };
 
   const DesktopTagFilter = () => (
