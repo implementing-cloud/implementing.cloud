@@ -1,432 +1,62 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-
-// Sample data structure
-interface Service {
-  id: string;
-  name: string;
-  logo: string;
-  parentCategory: string;
-  childCategory: string;
-  features: Record<string, string | number | boolean>;
-}
-
-interface ChildCategory {
-  id: string;
-  name: string;
-  services: Service[];
-}
-
-interface ParentCategory {
-  id: string;
-  name: string;
-  childCategories: ChildCategory[];
-}
-
-// Sample data with parent/child structure
-const parentCategories: ParentCategory[] = [
-  {
-    id: "compute",
-    name: "Compute",
-    childCategories: [
-      {
-        id: "virtual-machines",
-        name: "Virtual Machines",
-        services: [
-          {
-            id: "aws-ec2",
-            name: "AWS EC2",
-            logo: "🔶",
-            parentCategory: "compute",
-            childCategory: "virtual-machines",
-            features: {
-              "Starting Price": "$0.0058/hour",
-              "CPU Options": "1-128 vCPUs",
-              "Memory": "0.5GB - 24TB",
-              "Storage": "EBS, Instance Store",
-              "Network Performance": "Up to 100 Gbps",
-              "Free Tier": true,
-              "Global Regions": 31,
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Container Support": true
-            }
-          },
-          {
-            id: "azure-vm",
-            name: "Azure VM",
-            logo: "🔵",
-            parentCategory: "compute",
-            childCategory: "virtual-machines",
-            features: {
-              "Starting Price": "$0.0048/hour",
-              "CPU Options": "1-128 vCPUs",
-              "Memory": "0.75GB - 12TB",
-              "Storage": "Managed Disks, Blob Storage",
-              "Network Performance": "Up to 80 Gbps",
-              "Free Tier": true,
-              "Global Regions": 60,
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Container Support": true
-            }
-          },
-          {
-            id: "gcp-compute",
-            name: "Google Compute Engine",
-            logo: "🟡",
-            parentCategory: "compute",
-            childCategory: "virtual-machines",
-            features: {
-              "Starting Price": "$0.0056/hour",
-              "CPU Options": "1-96 vCPUs",
-              "Memory": "0.6GB - 6.5TB",
-              "Storage": "Persistent Disks, Local SSD",
-              "Network Performance": "Up to 100 Gbps",
-              "Free Tier": true,
-              "Global Regions": 37,
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Container Support": true
-            }
-          },
-          {
-            id: "digitalocean-droplets",
-            name: "DigitalOcean Droplets",
-            logo: "🔷",
-            parentCategory: "compute",
-            childCategory: "virtual-machines",
-            features: {
-              "Starting Price": "$0.0074/hour",
-              "CPU Options": "1-32 vCPUs",
-              "Memory": "1GB - 192GB",
-              "Storage": "SSD, Block Storage",
-              "Network Performance": "Up to 10 Gbps",
-              "Free Tier": false,
-              "Global Regions": 15,
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Container Support": true
-            }
-          }
-        ]
-      },
-      {
-        id: "serverless-functions",
-        name: "Function as a Service",
-        services: [
-          {
-            id: "aws-lambda",
-            name: "AWS Lambda",
-            logo: "🔶",
-            parentCategory: "compute",
-            childCategory: "serverless-functions",
-            features: {
-              "Starting Price": "$0.0000002/request",
-              "Runtime Support": "Node.js, Python, Java, C#, Go, Ruby",
-              "Memory": "128MB - 10GB",
-              "Timeout": "15 minutes",
-              "Concurrent Executions": "1000 (default)",
-              "Free Tier": "1M requests/month",
-              "Cold Start": "Yes",
-              "VPC Support": true,
-              "Event Sources": "200+",
-              "Monitoring": "CloudWatch"
-            }
-          },
-          {
-            id: "azure-functions",
-            name: "Azure Functions",
-            logo: "🔵",
-            parentCategory: "compute",
-            childCategory: "serverless-functions",
-            features: {
-              "Starting Price": "$0.0000002/request",
-              "Runtime Support": "C#, Java, JavaScript, Python, PowerShell",
-              "Memory": "128MB - 1.5GB",
-              "Timeout": "10 minutes",
-              "Concurrent Executions": "200 (default)",
-              "Free Tier": "1M requests/month",
-              "Cold Start": "Yes",
-              "VPC Support": true,
-              "Event Sources": "50+",
-              "Monitoring": "Azure Monitor"
-            }
-          }
-        ]
-      },
-      {
-        id: "container-services",
-        name: "Container as a Service",
-        services: [
-          {
-            id: "aws-ecs",
-            name: "AWS ECS",
-            logo: "🔶",
-            parentCategory: "compute",
-            childCategory: "container-services",
-            features: {
-              "Starting Price": "$0.0464/vCPU/hour",
-              "Container Runtime": "Docker",
-              "Launch Types": "EC2, Fargate",
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Service Discovery": true,
-              "Free Tier": false,
-              "Monitoring": "CloudWatch",
-              "Security": "IAM, VPC",
-              "CI/CD Integration": true
-            }
-          },
-          {
-            id: "azure-container-instances",
-            name: "Azure Container Instances",
-            logo: "🔵",
-            parentCategory: "compute",
-            childCategory: "container-services",
-            features: {
-              "Starting Price": "$0.0014/vCPU/hour",
-              "Container Runtime": "Docker",
-              "Launch Types": "Serverless",
-              "Auto Scaling": false,
-              "Load Balancer": false,
-              "Service Discovery": false,
-              "Free Tier": false,
-              "Monitoring": "Azure Monitor",
-              "Security": "Azure AD, VNet",
-              "CI/CD Integration": true
-            }
-          }
-        ]
-      },
-      {
-        id: "kubernetes",
-        name: "Managed Kubernetes",
-        services: [
-          {
-            id: "aws-eks",
-            name: "AWS EKS",
-            logo: "🔶",
-            parentCategory: "compute",
-            childCategory: "kubernetes",
-            features: {
-              "Starting Price": "$0.10/cluster/hour",
-              "Kubernetes Version": "1.24+",
-              "Node Types": "EC2, Fargate",
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Service Mesh": "App Mesh",
-              "Free Tier": false,
-              "Monitoring": "CloudWatch Container Insights",
-              "Security": "IAM, RBAC",
-              "Add-ons": "20+"
-            }
-          },
-          {
-            id: "gke",
-            name: "Google GKE",
-            logo: "🟡",
-            parentCategory: "compute",
-            childCategory: "kubernetes",
-            features: {
-              "Starting Price": "$0.10/cluster/hour",
-              "Kubernetes Version": "1.24+",
-              "Node Types": "GCE, Autopilot",
-              "Auto Scaling": true,
-              "Load Balancer": true,
-              "Service Mesh": "Istio",
-              "Free Tier": false,
-              "Monitoring": "Cloud Monitoring",
-              "Security": "IAM, RBAC",
-              "Add-ons": "15+"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "storage",
-    name: "Storage",
-    childCategories: [
-      {
-        id: "object-storage",
-        name: "Object Storage",
-        services: [
-          {
-            id: "aws-s3",
-            name: "AWS S3",
-            logo: "🔶",
-            parentCategory: "storage",
-            childCategory: "object-storage",
-            features: {
-              "Starting Price": "$0.023/GB/month",
-              "Storage Classes": "6",
-              "Max Object Size": "5TB",
-              "Availability": "99.999999999%",
-              "Versioning": true,
-              "Encryption": true,
-              "Free Tier": "5GB",
-              "CDN Integration": "CloudFront",
-              "Access Control": "IAM, ACL, Bucket Policies",
-              "Event Notifications": true
-            }
-          },
-          {
-            id: "azure-blob",
-            name: "Azure Blob Storage",
-            logo: "🔵",
-            parentCategory: "storage",
-            childCategory: "object-storage",
-            features: {
-              "Starting Price": "$0.0184/GB/month",
-              "Storage Classes": "4",
-              "Max Object Size": "4.75TB",
-              "Availability": "99.9%",
-              "Versioning": true,
-              "Encryption": true,
-              "Free Tier": "5GB",
-              "CDN Integration": "Azure CDN",
-              "Access Control": "Azure AD, RBAC",
-              "Event Notifications": true
-            }
-          }
-        ]
-      },
-      {
-        id: "managed-databases",
-        name: "Managed Databases",
-        services: [
-          {
-            id: "aws-rds",
-            name: "AWS RDS",
-            logo: "🔶",
-            parentCategory: "storage",
-            childCategory: "managed-databases",
-            features: {
-              "Starting Price": "$0.017/hour",
-              "Database Engines": "MySQL, PostgreSQL, MariaDB, Oracle, SQL Server",
-              "Max Storage": "64TB",
-              "Backup Retention": "35 days",
-              "Multi-AZ": true,
-              "Read Replicas": 15,
-              "Auto Scaling": true,
-              "Encryption": true,
-              "Point-in-time Recovery": true,
-              "Monitoring": "CloudWatch"
-            }
-          },
-          {
-            id: "azure-sql",
-            name: "Azure SQL Database",
-            logo: "🔵",
-            parentCategory: "storage",
-            childCategory: "managed-databases",
-            features: {
-              "Starting Price": "$0.0115/hour",
-              "Database Engines": "SQL Server, MySQL, PostgreSQL",
-              "Max Storage": "100TB",
-              "Backup Retention": "35 days",
-              "Multi-AZ": true,
-              "Read Replicas": 5,
-              "Auto Scaling": true,
-              "Encryption": true,
-              "Point-in-time Recovery": true,
-              "Monitoring": "Azure Monitor"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "ai-ml",
-    name: "AI & Machine Learning",
-    childCategories: [
-      {
-        id: "llm-apis",
-        name: "LLM APIs",
-        services: [
-          {
-            id: "openai-gpt",
-            name: "OpenAI GPT",
-            logo: "🤖",
-            parentCategory: "ai-ml",
-            childCategory: "llm-apis",
-            features: {
-              "Starting Price": "$0.0015/1K tokens",
-              "Models": "GPT-3.5, GPT-4, GPT-4 Turbo",
-              "Context Length": "4K-128K tokens",
-              "Function Calling": true,
-              "Fine-tuning": true,
-              "Rate Limit": "10,000 RPM",
-              "Streaming": true,
-              "Vision Support": true,
-              "Code Generation": true,
-              "Moderation": true
-            }
-          },
-          {
-            id: "anthropic-claude",
-            name: "Anthropic Claude",
-            logo: "🧠",
-            parentCategory: "ai-ml",
-            childCategory: "llm-apis",
-            features: {
-              "Starting Price": "$0.0015/1K tokens",
-              "Models": "Claude 3 Haiku, Sonnet, Opus",
-              "Context Length": "200K tokens",
-              "Function Calling": true,
-              "Fine-tuning": false,
-              "Rate Limit": "5,000 RPM",
-              "Streaming": true,
-              "Vision Support": true,
-              "Code Generation": true,
-              "Moderation": true
-            }
-          },
-          {
-            id: "google-gemini",
-            name: "Google Gemini",
-            logo: "💎",
-            parentCategory: "ai-ml",
-            childCategory: "llm-apis",
-            features: {
-              "Starting Price": "$0.0005/1K tokens",
-              "Models": "Gemini Pro, Gemini Ultra",
-              "Context Length": "32K-1M tokens",
-              "Function Calling": true,
-              "Fine-tuning": true,
-              "Rate Limit": "60 RPM",
-              "Streaming": true,
-              "Vision Support": true,
-              "Code Generation": true,
-              "Moderation": true
-            }
-          }
-        ]
-      }
-    ]
-  }
-];
+import { useQueryState, parseAsString, parseAsArrayOf } from "nuqs";
+import { useRouter } from "next/navigation";
+import { ComparisonTable } from "@/components/comparison-table";
+import { parentCategories } from "@/lib/comparison-data";
+import { Input } from "@/components/ui/input";
+import { Search, X } from "lucide-react";
 
 export default function ComparePage() {
-  const [selectedParentCategory, setSelectedParentCategory] = useState<string>(parentCategories[0].id);
-  const [selectedChildCategories, setSelectedChildCategories] = useState<string[]>([]);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [showComparison, setShowComparison] = useState(false);
+  const router = useRouter();
+  
+  // Use nuqs for query state management
+  const [selectedParentCategory, setSelectedParentCategory] = useQueryState(
+    'parent', 
+    parseAsString.withDefault(parentCategories[0].id)
+  );
+  const [selectedChildCategories, setSelectedChildCategories] = useQueryState(
+    'children', 
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
+  const [selectedServices, setSelectedServices] = useQueryState(
+    'services', 
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
+  const [showComparison, setShowComparison] = useQueryState(
+    'view',
+    parseAsString.withDefault('selection')
+  );
+  const [searchQuery, setSearchQuery] = useQueryState(
+    'search',
+    parseAsString.withDefault('')
+  );
 
   const currentParentCategory = parentCategories.find(cat => cat.id === selectedParentCategory);
   
   // Get all services from selected child categories
-  const availableServices = currentParentCategory?.childCategories
+  const allAvailableServices = currentParentCategory?.childCategories
     .filter(child => selectedChildCategories.length === 0 || selectedChildCategories.includes(child.id))
     .flatMap(child => child.services) || [];
+
+  // Filter services based on search query
+  const availableServices = allAvailableServices.filter(service => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return (
+      service.name.toLowerCase().includes(query) ||
+      service.id.toLowerCase().includes(query) ||
+      service.childCategory.toLowerCase().includes(query) ||
+      Object.values(service.features).some(feature => 
+        String(feature).toLowerCase().includes(query)
+      )
+    );
+  });
 
   const selectedServiceData = availableServices.filter(service => 
     selectedServices.includes(service.id)
@@ -450,14 +80,49 @@ export default function ComparePage() {
     );
   };
 
+  // Generate comparison URL based on selected services
+  const generateComparisonUrl = (services: string[]) => {
+    if (services.length === 0) return;
+    
+    // Sort services for consistent URLs
+    const sortedServices = [...services].sort();
+    const urlSlug = sortedServices.join('-vs-');
+    return `/compare/service/${urlSlug}`;
+  };
+
+  // Generate category comparison URL
+  const generateCategoryComparisonUrl = (parentCat: string, childCats: string[]) => {
+    if (childCats.length === 0) return;
+    
+    const sortedCategories = [...childCats].sort();
+    const urlSlug = sortedCategories.join('-vs-');
+    return `/compare/category/${parentCat}/${urlSlug}`;
+  };
+
   const handleCompare = () => {
     if (selectedServices.length >= 1) {
-      setShowComparison(true);
+      // Navigate to SEO-friendly comparison URL
+      const comparisonUrl = generateComparisonUrl(selectedServices);
+      if (comparisonUrl) {
+        router.push(comparisonUrl);
+      } else {
+        // Fallback to query parameter approach
+        setShowComparison('comparison');
+      }
+    }
+  };
+
+  const handleCompareCategories = () => {
+    if (selectedChildCategories.length >= 1) {
+      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedChildCategories);
+      if (categoryUrl) {
+        router.push(categoryUrl);
+      }
     }
   };
 
   const handleBackToSelection = () => {
-    setShowComparison(false);
+    setShowComparison('selection');
   };
 
   const handleParentCategoryChange = (parentCategoryId: string) => {
@@ -466,17 +131,51 @@ export default function ComparePage() {
     setSelectedServices([]);
   };
 
-  // Get all unique features for comparison table
-  const allFeatures = selectedServiceData.reduce((acc, service) => {
-    Object.keys(service.features).forEach(feature => {
-      if (!acc.includes(feature)) {
-        acc.push(feature);
-      }
-    });
-    return acc;
-  }, [] as string[]);
+  // Select All functionality
+  const handleSelectAllChildCategories = () => {
+    if (!currentParentCategory) return;
+    
+    const allChildIds = currentParentCategory.childCategories.map(child => child.id);
+    const isAllSelected = allChildIds.every(id => selectedChildCategories.includes(id));
+    
+    if (isAllSelected) {
+      // Deselect all
+      setSelectedChildCategories([]);
+    } else {
+      // Select all
+      setSelectedChildCategories(allChildIds);
+    }
+    // Clear services when changing categories
+    setSelectedServices([]);
+  };
 
-  if (showComparison) {
+  const handleSelectAllServices = () => {
+    const allServiceIds = availableServices.map(service => service.id);
+    const isAllSelected = allServiceIds.every(id => selectedServices.includes(id));
+    
+    if (isAllSelected) {
+      // Deselect all visible services
+      setSelectedServices(prev => prev.filter(id => !allServiceIds.includes(id)));
+    } else {
+      // Select all visible services (add to existing selection)
+      setSelectedServices(prev => [...new Set([...prev, ...allServiceIds])]);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+  };
+
+  // Check if all items are selected for button text
+  const allChildCategoriesSelected = currentParentCategory ? 
+    currentParentCategory.childCategories.every(child => selectedChildCategories.includes(child.id)) : false;
+  
+  const allServicesSelected = availableServices.length > 0 ? 
+    availableServices.every(service => selectedServices.includes(service.id)) : false;
+
+  // This is handled by the ComparisonTable component now
+
+  if (showComparison === 'comparison') {
     return (
       <div className="min-h-screen bg-background relative">
         <div className="absolute top-0 left-0 z-0 w-full h-[200px] [mask-image:linear-gradient(to_top,transparent_25%,black_95%)]">
@@ -503,51 +202,12 @@ export default function ComparePage() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto p-6">
-          <div className="bg-card rounded-lg border overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left p-4 font-medium sticky left-0 bg-muted/50 min-w-[200px]">
-                      Features
-                    </th>
-                    {selectedServiceData.map(service => (
-                      <th key={service.id} className="text-center p-4 font-medium min-w-[200px]">
-                        <div className="flex flex-col items-center gap-2">
-                          <span className="text-2xl">{service.logo}</span>
-                          <span className="text-sm">{service.name}</span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {allFeatures.map((feature, index) => (
-                    <tr key={feature} className={cn(
-                      "border-b",
-                      index % 2 === 0 ? "bg-background" : "bg-muted/25"
-                    )}>
-                      <td className="p-4 font-medium sticky left-0 bg-inherit">
-                        {feature}
-                      </td>
-                      {selectedServiceData.map(service => (
-                        <td key={service.id} className="p-4 text-center">
-                          <span className="text-sm">
-                            {service.features[feature] !== undefined 
-                              ? String(service.features[feature]) 
-                              : "N/A"
-                            }
-                          </span>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <ComparisonTable
+          services={selectedServiceData}
+          onBackToSelection={handleBackToSelection}
+          title="Service Comparison"
+          description={`Comparing ${selectedServiceData.length} services from ${currentParentCategory?.name}`}
+        />
       </div>
     );
   }
@@ -594,9 +254,30 @@ export default function ComparePage() {
         {/* Child Category Selection */}
         {currentParentCategory && (
           <div>
-            <h2 className="text-xl font-medium mb-4">
-              Select Child Categories ({selectedChildCategories.length} selected)
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-medium">
+                Select Child Categories ({selectedChildCategories.length} selected)
+              </h2>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleSelectAllChildCategories}
+                  variant="outline"
+                  size="sm"
+                >
+                  {allChildCategoriesSelected ? "Deselect All" : "Select All"}
+                </Button>
+                <Button 
+                  onClick={handleCompareCategories}
+                  variant="secondary"
+                  disabled={selectedChildCategories.length === 0}
+                >
+                  {selectedChildCategories.length === 0 
+                    ? "Please select categories" 
+                    : `Compare ${selectedChildCategories.length} Categor${selectedChildCategories.length !== 1 ? 'ies' : 'y'}`
+                  }
+                </Button>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-3">
               {currentParentCategory.childCategories.map(childCategory => (
                 <Button
@@ -618,26 +299,75 @@ export default function ComparePage() {
         )}
 
         {/* Services Grid */}
-        {availableServices.length > 0 && (
+        {allAvailableServices.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-medium">
                 Select Services to Compare ({selectedServices.length} selected)
               </h2>
-              <Button 
-                onClick={handleCompare}
-                disabled={selectedServices.length === 0}
-                variant={selectedServices.length === 0 ? "outline" : "default"}
-              >
-                {selectedServices.length === 0 
-                  ? "Please select a service" 
-                  : `Compare ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`
-                }
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={handleSelectAllServices}
+                  variant="outline"
+                  size="sm"
+                  disabled={availableServices.length === 0}
+                >
+                  {allServicesSelected ? "Deselect All" : "Select All"}
+                </Button>
+                <Button 
+                  onClick={handleCompare}
+                  disabled={selectedServices.length === 0}
+                  variant={selectedServices.length === 0 ? "outline" : "default"}
+                >
+                  {selectedServices.length === 0 
+                    ? "Please select a service" 
+                    : `Compare ${selectedServices.length} Service${selectedServices.length !== 1 ? 's' : ''}`
+                  }
+                </Button>
+              </div>
+            </div>
+
+            {/* Search Input */}
+            <div className="mb-4">
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search services by name, category, or features..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-10"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-auto p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+              {searchQuery && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Found {availableServices.length} service{availableServices.length !== 1 ? 's' : ''} matching &quot;{searchQuery}&quot;
+                  {availableServices.length === 0 && (
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={handleClearSearch}
+                      className="h-auto p-0 ml-2"
+                    >
+                      Clear search
+                    </Button>
+                  )}
+                </p>
+              )}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {availableServices.map(service => {
+            {availableServices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {availableServices.map(service => {
                 const isSelected = selectedServices.includes(service.id);
                 const childCategory = currentParentCategory?.childCategories.find(
                   cat => cat.id === service.childCategory
@@ -666,7 +396,24 @@ export default function ComparePage() {
                   </Card>
                 );
               })}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-4xl mb-3">🔍</div>
+                <h3 className="text-lg font-medium mb-2">No services found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search terms or 
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="h-auto p-0 ml-1"
+                  >
+                    clear the search
+                  </Button>
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

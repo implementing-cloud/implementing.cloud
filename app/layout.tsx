@@ -8,6 +8,7 @@ import { SiteNav } from "@/components/site-nav";
 import Footer from "@/components/footer";
 import { QuickNotes } from "@/components/quick-notes";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import "@/app/globals.css";
 
 export const viewport: Viewport = {
@@ -36,20 +37,22 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div>
-            <SiteNav />
-            {children}
-            <Footer />
-          </div>
-          <QuickNotes />
-          <Toaster />
-        </ThemeProvider>
+        <NuqsAdapter>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div>
+              <SiteNav />
+              {children}
+              <Footer />
+            </div>
+            <QuickNotes />
+            <Toaster />
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
