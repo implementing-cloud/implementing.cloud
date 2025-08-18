@@ -31,7 +31,7 @@ const steps: Step[] = [
 
 export function HowItWorks() {
   return (
-    <section className="max-w-7xl mx-auto w-full px-6 lg:px-0 py-16">
+    <section className="max-w-7xl mx-auto w-full px-6 lg:px-4 py-16">
       <div className="mb-12">
         <h2 className="text-3xl font-medium tracking-tight text-center">How it works</h2>
       </div>
@@ -51,8 +51,8 @@ export function HowItWorks() {
               </p>
             </div>
             
-            <div className="flex-1">
-              <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden border border-border">
+            <div className="flex-1 w-full">
+              <div className="relative w-full h-64 lg:aspect-[4/3] lg:h-auto rounded-lg overflow-hidden border border-border">
                 <Image
                   src={step.imageUrl}
                   alt={`${step.title} illustration`}

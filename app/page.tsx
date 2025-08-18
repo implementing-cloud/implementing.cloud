@@ -117,7 +117,7 @@ export default async function HomePage({
       {selectedTag === "All" && <PromoBanner />}
 
       {/* Articles Section */}
-      <div className="max-w-7xl mx-auto w-full px-6 lg:px-0">
+      <div className="max-w-7xl mx-auto w-full px-6 lg:px-4">
         <div className="py-8">
           <h2 className="text-2xl font-medium tracking-tight mb-6">You might interest</h2>
         </div>
