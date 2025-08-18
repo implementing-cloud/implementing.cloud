@@ -1,31 +1,43 @@
 # Implementing Cloud
 
-Implementing Cloud is a platform dedicated to simplifying the way individuals and teams design, build, and operate in the cloud. Our goal is to remove unnecessary complexity from cloud adoption—whether you’re a solo developer experimenting with ideas, a startup scaling fast, or an enterprise looking for efficiency and best practices.
+> 🚧 **Work in Progress** - This platform is currently under active development.
 
-At its core, Implementing Cloud helps you:
+A comprehensive platform for simplifying cloud adoption and learning, built with the [Magic UI Blog Template](https://github.com/magicuidesign/blog-template).
 
-1. Design smarter architectures – We provide guided workflows and templates that let you generate cloud architectures tailored to your needs.
-2. Automate infrastructure – With Infrastructure as Code (IaC) support, we turn your designs into ready-to-deploy configurations using Terraform, CLI scripts, or native tools.
-3. Estimate and optimize costs – We show real-time pricing insights so you can balance performance and budget.
-4. Manage cloud services – Through a central dashboard, you can explore, compare, and manage services across providers like Azure, AWS, GCP, and more.
-5. Collaborate and learn – Implementing Cloud isn’t just a tool; it’s a growing library of best practices, comparisons, and insights that developers, engineers, and businesses can learn from.
+## About
 
-## Our Vision
+Implementing Cloud is designed to help developers, teams, and organizations navigate the complex world of cloud computing with clarity and confidence. Our mission is to transform overwhelming cloud complexity into actionable insights and practical knowledge.
 
-Cloud technology should empower builders, not overwhelm them. Today, choosing the right services, architectures, and deployment methods can feel like a maze. Implementing Cloud is here to turn that complexity into clarity—so you can focus on creating, not configuring.
+## Our Goals & Vision
 
-## 🚀 Getting Started
+🌐 **Service Exploration** - Discover and explore major cloud platforms with curated insights, detailed pricing information, and developer experience comparisons
+
+📚 **Implementation Guides** - Access step-by-step tutorials covering setup, proof-of-concept development, deployment, and scaling with real-world examples
+
+🤖 **AI Learning Made Simple** - Navigate the rapidly evolving AI landscape from basics to practical applications, covering everything from GPT vs Claude to RAG and multi-agent systems
+
+⚖️ **Compare & Choose Wisely** - Make informed decisions with comprehensive pricing and feature comparisons across cloud services
+
+📝 **Built-in Learning Tools** - Enhance your learning experience with integrated note-taking capabilities (press 'N' to create notes, highlight text for quick saves, use Ctrl+K to search)
+
+## 🚀 Quick Start
 
 ```bash
+# Clone the repository
+git clone git@github.com:implementing-cloud/implementing.cloud.git
+cd implementing.cloud
+
 # Install dependencies
 npm install
 
 # Start development server
-npm dev
+npm run dev
 
 # Build for production
-npm build
+npm run build
 ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
 ## ✍️ Adding Blog Posts
 
@@ -55,6 +67,8 @@ export default function Component() {
 }
 ```
 ````
+
+In the future, we will have our own CMS built with Directus to accommodate complex structures.
 
 ## 🎨 Customization
 
@@ -101,29 +115,26 @@ export const authors: Record<string, Author> = {
 
 Then reference your author in blog posts using the key (e.g., `author: "yourname"`).
 
-## ✨ Features
+## 🛠️ Built With
 
-### Interactive Mobile Promo Banner
-The platform includes a responsive promotional banner that adapts to provide optimal user experience across devices:
+- **[Next.js 15](https://nextjs.org/)** - React framework with App Router
+- **[Fumadocs MDX](https://fumadocs.vercel.app/)** - MDX processing and components  
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+- **[Magic UI](https://magicui.design/)** - Beautiful UI components
 
-- **Desktop**: Traditional bento-style grid layout with full feature cards
-- **Mobile**: Interactive layout with highlighted feature + 2x2 grid of compact cards
-- **Auto-rotation**: Featured content cycles every 5 seconds
-- **Tap-to-explore**: Users can tap any grid card to bring it to the highlighted position
-- **Smooth transitions**: Elegant fade animations between content changes
-
-Perfect for showcasing key platform features without overwhelming mobile users with excessive scrolling.
-
-📖 [Learn more about the Mobile Promo Banner](./docs/mobile-promo-banner.md)
-
-## 📖 Technologies Used
-
-- **Next.js 15** - React framework with App Router
-- **Fumadocs MDX** - MDX processing and components
-- **Tailwind CSS** - Utility-first CSS framework
-- **TypeScript** - Type-safe JavaScript
-- **Geist Font** - Modern typography
+Based on the [Magic UI Blog Template](https://github.com/magicuidesign/blog-template) - A modern, feature-rich blog template with excellent developer experience.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We welcome contributions! This is an open-source project and we appreciate any help in making it better.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes using conventional commit (`git commit -m 'feat: add some amazing feature'`)
+4. Push to the branch (`git push origin feat/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
