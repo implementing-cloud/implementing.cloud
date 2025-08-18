@@ -48,7 +48,7 @@ export default async function BlogPost({ params }: PageProps) {
   }
 
   const MDX = page.data.body;
-  const date = new Date(page.data.date);
+  const date = new Date(typeof page.data.date === 'string' ? page.data.date : Date.now());
   const formattedDate = formatDate(date);
 
   return (
@@ -74,7 +74,7 @@ export default async function BlogPost({ params }: PageProps) {
                 <span className="sr-only">Back to all articles</span>
               </Link>
             </Button>
-            {page.data.tags && page.data.tags.length > 0 && (
+            {Array.isArray(page.data.tags) && page.data.tags.length > 0 && (
               <div className="flex flex-wrap gap-3 text-muted-foreground">
                 {page.data.tags.map((tag: string) => (
                   <span
@@ -105,7 +105,7 @@ export default async function BlogPost({ params }: PageProps) {
       <div className="flex divide-x divide-border relative max-w-7xl mx-auto px-4 md:px-0 z-10">
         <div className="absolute max-w-7xl mx-auto left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] lg:w-full h-full border-x border-border p-0 pointer-events-none" />
         <main className="w-full p-0 overflow-hidden">
-          {page.data.thumbnail && (
+          {typeof page.data.thumbnail === 'string' && (
             <div className="relative w-full h-[500px] overflow-hidden object-cover border border-transparent">
               <Image
                 src={page.data.thumbnail}
@@ -126,14 +126,14 @@ export default async function BlogPost({ params }: PageProps) {
           <div className="mt-10">
             <ReadMoreSection
               currentSlug={[slug]}
-              currentTags={page.data.tags}
+              currentTags={Array.isArray(page.data.tags) ? page.data.tags : undefined}
             />
           </div>
         </main>
 
         <aside className="hidden lg:block w-[350px] flex-shrink-0 p-6 lg:p-10 bg-muted/60 dark:bg-muted/20">
           <div className="sticky top-20 space-y-8">
-            {page.data.author && isValidAuthor(page.data.author) && (
+            {typeof page.data.author === 'string' && isValidAuthor(page.data.author) && (
               <AuthorCard author={getAuthor(page.data.author)} />
             )}
             <div className="border border-border rounded-lg p-6 bg-card">

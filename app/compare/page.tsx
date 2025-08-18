@@ -10,8 +10,9 @@ import { ComparisonTable } from "@/components/comparison-table";
 import { parentCategories } from "@/lib/comparison-data";
 import { Input } from "@/components/ui/input";
 import { Search, X, TableIcon } from "lucide-react";
+import { Suspense } from "react";
 
-export default function ComparePage() {
+function ComparePageContent() {
   const router = useRouter();
   
   // Use nuqs for query state management
@@ -135,14 +136,6 @@ export default function ComparePage() {
     }
   };
 
-  const handleCompareCategoriesSimplified = () => {
-    if (selectedSubCategories.length >= 1) {
-      const categoryUrl = generateCategoryComparisonUrl(selectedParentCategory, selectedSubCategories);
-      if (categoryUrl) {
-        router.push(`/compare/simplified${categoryUrl.replace('/compare', '')}`);
-      }
-    }
-  };
 
   const handleBackToSelection = () => {
     setShowComparison('selection');
@@ -510,5 +503,13 @@ export default function ComparePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>}>
+      <ComparePageContent />
+    </Suspense>
   );
 }

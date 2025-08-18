@@ -50,7 +50,7 @@ export default function NotesPage() {
         const stored = localStorage.getItem('quick-notes')
         if (!stored) return []
         const notes = JSON.parse(stored)
-        return notes.map((note: any) => {
+        return notes.map((note: QuickNote) => {
           const timestamp = note.timestamp ? new Date(note.timestamp) : new Date()
           const lastUpdated = note.lastUpdated ? new Date(note.lastUpdated) : undefined
           
@@ -147,7 +147,7 @@ export default function NotesPage() {
     notesToMerge.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
     // Create merged content with markdown formatting (Strategy B)
-    const mergedContent = notesToMerge.map((note, index) => {
+    const mergedContent = notesToMerge.map((note) => {
       const formattedTimestamp = formatDate(note.timestamp)
       
       // Handle both absolute and relative URLs

@@ -26,7 +26,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
       "[role='main'] h1, [role='main'] h2"
     ];
     
-    let headingElements: NodeListOf<Element> | null = null;
+    let headingElements: NodeListOf<Element> | Element[] | null = null;
     
     // Try each selector until we find headings
     for (const selector of contentSelectors) {
@@ -53,7 +53,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
         }
       });
       
-      headingElements = filteredHeadings as any;
+      headingElements = filteredHeadings;
     }
 
     const headingsArray: Heading[] = [];

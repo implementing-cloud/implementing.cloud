@@ -1,11 +1,13 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { 
-  getServicesByIds
+  getServicesByIds,
+  Service
 } from "@/lib/comparison-data";
 import { 
   getCategoriesByIds,
-  getParentCategoryName
+  getParentCategoryName,
+  CategoryComparisonData
 } from "@/lib/category-comparison-data";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { Button } from "@/components/ui/button";
@@ -152,7 +154,7 @@ export async function generateMetadata({ params }: SimplifiedPageProps): Promise
 }
 
 // Simplified Table Component for Services
-function SimplifiedServiceTable({ services }: { services: any[] }) {
+function SimplifiedServiceTable({ services }: { services: Service[] }) {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="overflow-x-auto">
@@ -165,28 +167,24 @@ function SimplifiedServiceTable({ services }: { services: any[] }) {
             </tr>
           </thead>
           <tbody>
-            {services.map((service, index) => (
+            {services.map((service) => (
               <tr key={service.id} className="border-b hover:bg-muted/50">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">{service.logo}</div>
                     <div>
                       <div className="font-medium">{service.name}</div>
-                      <div className="text-sm text-muted-foreground">{service.provider}</div>
                     </div>
                   </div>
                 </td>
                 <td className="p-4">
                   <div className="text-sm">
-                    {service.pricing?.model || "Contact for pricing"}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {service.pricing?.startingPrice || "Varies"}
+                    Contact for pricing
                   </div>
                 </td>
                 <td className="p-4">
                   <div className="text-sm text-muted-foreground max-w-md">
-                    {service.description || "No additional notes available"}
+                    No additional notes available
                   </div>
                 </td>
               </tr>
@@ -199,7 +197,7 @@ function SimplifiedServiceTable({ services }: { services: any[] }) {
 }
 
 // Simplified Table Component for Categories
-function SimplifiedCategoryTable({ categories }: { categories: any[] }) {
+function SimplifiedCategoryTable({ categories }: { categories: CategoryComparisonData[] }) {
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="overflow-x-auto">
@@ -212,19 +210,19 @@ function SimplifiedCategoryTable({ categories }: { categories: any[] }) {
             </tr>
           </thead>
           <tbody>
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <tr key={category.id} className="border-b hover:bg-muted/50">
                 <td className="p-4">
                   <div className="font-medium">{category.name}</div>
                 </td>
                 <td className="p-4">
                   <div className="text-sm">
-                    {category.keyCharacteristics || "Contact for details"}
+                    {category.shortDescription || "Contact for details"}
                   </div>
                 </td>
                 <td className="p-4">
                   <div className="text-sm text-muted-foreground max-w-md">
-                    {category.description || "No additional notes available"}
+                    No additional notes available
                   </div>
                 </td>
               </tr>
@@ -330,7 +328,7 @@ export default async function SimplifiedComparePage({ params }: SimplifiedPagePr
       {type === "service" ? (
         <SimplifiedServiceTable services={services} />
       ) : (
-        <SimplifiedCategoryTable categories={categories} />
+        <SimplifiedCategoryTable categories={categoryData} />
       )}
     </div>
   );

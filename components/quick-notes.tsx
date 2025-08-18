@@ -51,7 +51,7 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
       const stored = localStorage.getItem('quick-notes')
       if (!stored) return []
       const notes = JSON.parse(stored)
-      return notes.map((note: any) => ({
+      return notes.map((note: QuickNote) => ({
         ...note,
         timestamp: new Date(note.timestamp)
       }))
@@ -215,3 +215,5 @@ export const QuickNotes = forwardRef<QuickNotesRef>((props, ref) => {
     </>
   )
 })
+
+QuickNotes.displayName = "QuickNotes"

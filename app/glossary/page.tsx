@@ -254,7 +254,7 @@ export default function GlossaryPage() {
                     className={`bg-card border rounded-lg p-4 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer ${
                       isExpanded ? "md:col-span-2 lg:col-span-3 shadow-lg shadow-primary/10 -translate-y-1 border-primary/20 bg-primary/5 shadow-inner" : ""
                     }`}
-                    onClick={(e) => {
+                    onClick={() => {
                       // Only trigger if no text is selected
                       const selection = window.getSelection();
                       if (selection && selection.toString().length > 0) {

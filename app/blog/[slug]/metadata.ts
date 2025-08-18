@@ -41,7 +41,7 @@ export async function generateMetadata({
       description: page.data.description,
       keywords: [
         page.data.title,
-        ...(page.data.tags || []),
+        ...(Array.isArray(page.data.tags) ? page.data.tags : []),
         "Blog",
         "Article",
         "Web Development",
@@ -51,11 +51,11 @@ export async function generateMetadata({
       ],
       authors: [
         {
-          name: page.data.author || "Implementing Cloud",
+          name: (typeof page.data.author === 'string' ? page.data.author : "Implementing Cloud"),
           url: siteConfig.url,
         },
       ],
-      creator: page.data.author || "Implementing Cloud",
+      creator: (typeof page.data.author === 'string' ? page.data.author : "Implementing Cloud"),
       publisher: "Implementing Cloud",
       robots: {
         index: true,
@@ -73,12 +73,12 @@ export async function generateMetadata({
         description: page.data.description,
         type: "article",
         url: ogUrl,
-        publishedTime: page.data.date,
-        authors: [page.data.author || "Implementing Cloud"],
-        tags: page.data.tags,
+        publishedTime: (typeof page.data.date === 'string' ? page.data.date : undefined),
+        authors: [(typeof page.data.author === 'string' ? page.data.author : "Implementing Cloud")],
+        tags: Array.isArray(page.data.tags) ? page.data.tags : undefined,
         images: [
           {
-            url: page.data.thumbnail || ogImage,
+            url: (typeof page.data.thumbnail === 'string' ? page.data.thumbnail : ogImage),
             width: 1200,
             height: 630,
             alt: page.data.title,
@@ -90,7 +90,7 @@ export async function generateMetadata({
         card: "summary_large_image",
         title: page.data.title,
         description: page.data.description,
-        images: [page.data.thumbnail || ogImage],
+        images: [(typeof page.data.thumbnail === 'string' ? page.data.thumbnail : ogImage)],
         creator: "@implementingcloud",
         site: "@implementingcloud",
       },
