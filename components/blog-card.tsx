@@ -31,7 +31,7 @@ export function BlogCard({
     >
       <div className="flex flex-col h-full">
         {thumbnail && (
-          <div className="relative w-full h-48 overflow-hidden">
+          <Link href={url} className="relative w-full h-48 overflow-hidden block">
             <Image
               src={thumbnail}
               alt={title}
@@ -39,13 +39,13 @@ export function BlogCard({
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-          </div>
+          </Link>
         )}
 
         <div className="p-6 flex flex-col gap-2 flex-grow">
-          <h3 className="text-xl font-semibold text-card-foreground">
+          <Link href={url} className="text-xl font-semibold text-card-foreground hover:text-primary transition-colors">
             {title}
-          </h3>
+          </Link>
           <p className="text-muted-foreground text-sm">{description}</p>
           <time className="block text-sm font-medium text-muted-foreground">
             {date}

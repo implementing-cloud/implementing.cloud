@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Blog - Magic UI";
+export const alt = "Blog - Implementing Cloud";
 export const size = {
   width: 1200,
   height: 630,
@@ -15,7 +15,7 @@ const getAssetData = async () => {
     const fontUrls = {
       clashDisplay: `${baseUrl}/fonts/ClashDisplay-Semibold.ttf`,
       cabinetGrotesk: `${baseUrl}/fonts/CabinetGrotesk-Medium.ttf`,
-      logo: `${baseUrl}/magicui-logo.png`,
+      logo: `${baseUrl}/ic-logo.png`,
     };
 
     const [clashDisplayRes, cabinetGroteskRes, logoRes] = await Promise.all([
@@ -107,15 +107,15 @@ export default async function Image() {
             <img
               src={
                 assetData?.logoBase64 ||
-                `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
+                `${process.env.NEXT_PUBLIC_SITE_URL}/ic-logo.png`
               }
-              alt="MagicUI Logo"
+              alt="Implementing Cloud Logo"
               width={100}
               height={100}
             />
             <h1 style={styles.title}>Blog</h1>
             <p style={styles.description}>
-              A blog about design, development, and other things.
+              Simplifying cloud adoption with practical insights.
             </p>
           </div>
         </div>

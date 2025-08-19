@@ -16,16 +16,16 @@ export function PromoContent({
       <div className={cn("border-t border-border bg-muted/20 p-3", className)}>
         <div className="flex items-center gap-3">
           <img
-            src="/magicui-logo.png"
-            alt="Magic UI"
+            src="/ic-logo.png"
+            alt="Implementing Cloud"
             className="w-8 h-8 rounded object-cover flex-shrink-0"
           />
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-foreground/90 truncate">
-              Try Magic UI Pro
+              Implementing Cloud
             </p>
             <p className="text-xs text-muted-foreground truncate">
-              Beautiful design system
+              Cloud architecture insights
             </p>
           </div>
           <a
@@ -46,17 +46,17 @@ export function PromoContent({
     >
       <div className="flex flex-col gap-4">
         <img
-          src="/magicui-pro.png"
-          alt="Magic UI"
+          src="/ic-logo.png"
+          alt="Implementing Cloud"
           className="w-full h-40 rounded-md object-cover"
         />
         <div className="flex flex-col gap-1">
           <h3 className="text-lg font-semibold tracking-tighter">
-            Try Magic UI Pro
+            Implementing Cloud
           </h3>
           <p className="text-sm text-muted-foreground">
-            Magic UI Pro is a design system for building beautiful and
-            responsive web applications.
+            Practical insights for designing, building, and operating cloud solutions.
+            Learn from real-world implementations.
           </p>
         </div>
       </div>

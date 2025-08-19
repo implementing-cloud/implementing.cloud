@@ -2,7 +2,7 @@
 
 > 🚧 **Work in Progress** - This platform is currently under active development.
 
-A comprehensive platform for simplifying cloud adoption and learning, built with the [Magic UI Blog Template](https://github.com/magicuidesign/blog-template).
+A comprehensive platform for simplifying cloud adoption and learning. This platform provides practical insights for busy developers navigating cloud computing.
 
 ## About
 
@@ -123,7 +123,9 @@ Then reference your author in blog posts using the key (e.g., `author: "yourname
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
 - **[Magic UI](https://magicui.design/)** - Beautiful UI components
 
-Based on the [Magic UI Blog Template](https://github.com/magicuidesign/blog-template) - A modern, feature-rich blog template with excellent developer experience.
+## 🙏 Acknowledgments
+
+Built with the [Magic UI Blog Template](https://github.com/magicuidesign/blog-template) - A modern, feature-rich blog template with excellent developer experience. We're grateful for the solid foundation it provided for our cloud-focused platform.
 
 ## 🤝 Contributing
 

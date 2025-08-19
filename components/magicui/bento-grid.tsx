@@ -42,6 +42,7 @@ const BentoCard = ({
   description,
   href,
   cta,
+  shortName,
   ...props
 }: BentoCardProps) => (
   <div

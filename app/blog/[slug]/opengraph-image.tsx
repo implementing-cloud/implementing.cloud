@@ -24,7 +24,7 @@ const getAssetData = async (authorAvatar?: string) => {
     const assetUrls = {
       clashDisplay: `${baseUrl}/fonts/ClashDisplay-Semibold.ttf`,
       cabinetGrotesk: `${baseUrl}/fonts/CabinetGrotesk-Medium.ttf`,
-      logo: `${baseUrl}/magicui-logo.png`,
+      logo: `${baseUrl}/ic-logo.png`,
       ...(authorAvatar && { authorAvatar: `${baseUrl}${authorAvatar}` }),
     };
 
@@ -202,9 +202,9 @@ export default async function Image({ params }: { params: { slug: string } }) {
               <img
                 src={
                   assetData?.logoBase64 ||
-                  `${process.env.NEXT_PUBLIC_SITE_URL}/magicui-logo.png`
+                  `${process.env.NEXT_PUBLIC_SITE_URL}/ic-logo.png`
                 }
-                alt="MagicUI Logo"
+                alt="Implementing Cloud Logo"
                 width={80}
                 height={80}
                 style={styles.logo}
