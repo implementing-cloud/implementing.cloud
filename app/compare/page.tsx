@@ -5,13 +5,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useQueryState, parseAsString, parseAsArrayOf } from "nuqs";
 import { useRouter } from "next/navigation";
-import { parentCategories, providerCategories } from "@/lib/comparison-data";
+import { parentCategories, providerCategories, type FeatureValue } from "@/lib/comparison-data";
 import { Input } from "@/components/ui/input";
 import { Search, Check, ChevronsUpDown, Scale } from "lucide-react";
 import { Suspense, useState, useMemo } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+
+function isFeatureValue(value: unknown): value is FeatureValue {
+  return typeof value === 'object' && value !== null && 'value' in value;
+}
+
+function getDisplayValue(featureValue: string | number | boolean | FeatureValue): string {
+  if (isFeatureValue(featureValue)) {
+    return String(featureValue.value);
+  }
+  return String(featureValue);
+}
 
 function ComparePageContent() {
   const router = useRouter();
@@ -472,7 +483,7 @@ function ComparePageContent() {
                           </p>
                           <div className="pt-2 border-t space-y-2">
                             <div className="text-sm font-semibold text-primary">
-                              {service.features['Starting Price'] || 'Pricing varies'}
+                              {getDisplayValue(service.features['Starting Price'] || 'Pricing varies')}
                             </div>
                             <Badge variant="secondary" className="text-xs">
                               {service.subcategory}

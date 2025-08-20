@@ -328,7 +328,6 @@ export default async function CompareParamsPage({ params }: ComparePageProps) {
       {type === "service" || type === "provider" ? (
         <ComparisonTable
           services={services}
-          onBackToSelection={() => {}} // Not used in this context
           title={title}
           description={description}
         />

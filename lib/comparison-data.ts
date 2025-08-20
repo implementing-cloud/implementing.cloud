@@ -1,11 +1,23 @@
 // Sample data structure
+export interface FeatureValue {
+  value: string | number | boolean;
+  code?: {
+    language: string;
+    content: string;
+  };
+  context?: {
+    type: 'icon' | 'expandable';
+    content: string;
+  };
+}
+
 export interface Service {
   id: string;
   name: string;
   logo: string;
   parentCategory: string;
   childCategory: string;
-  features: Record<string, string | number | boolean>;
+  features: Record<string, string | number | boolean | FeatureValue>;
 }
 
 export interface ChildCategory {
@@ -142,7 +154,73 @@ export const parentCategories: ParentCategory[] = [
               "Cold Start": "Yes",
               "VPC Support": true,
               "Event Sources": "200+",
-              "Monitoring": "CloudWatch"
+              "Monitoring": "CloudWatch",
+              "Example Usage": {
+                value: "Simple HTTP handler",
+                code: {
+                  language: "javascript",
+                  content: `export const handler = async (event) => {
+  // Parse the incoming request body
+  const { name, email, preferences } = JSON.parse(event.body);
+  
+  // Validate input parameters
+  if (!name || !email) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        error: 'Name and email are required'
+      }),
+    };
+  }
+  
+  // Process the request
+  try {
+    const result = await processUserData({
+      name,
+      email,
+      preferences: preferences || {}
+    });
+    
+    // Return success response
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        message: \`Hello \${name}!\`,
+        userId: result.id,
+        status: 'success'
+      }),
+    };
+  } catch (error) {
+    console.error('Processing failed:', error);
+    
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'Internal server error'
+      }),
+    };
+  }
+};
+
+// Helper function to process user data
+async function processUserData(userData) {
+  // Implementation would go here
+  return { id: generateUserId() };
+}
+
+function generateUserId() {
+  return Math.random().toString(36).substr(2, 9);
+}`
+                },
+                context: {
+                  type: "expandable",
+                  content: "AWS Lambda supports various event sources including API Gateway, S3, DynamoDB, and more. The runtime environment is stateless and automatically managed by AWS. This example shows a comprehensive HTTP handler with error handling and validation."
+                }
+              }
             }
           },
           {
@@ -161,7 +239,31 @@ export const parentCategories: ParentCategory[] = [
               "Cold Start": "Yes",
               "VPC Support": true,
               "Event Sources": "50+",
-              "Monitoring": "Azure Monitor"
+              "Monitoring": "Azure Monitor",
+              "Example Usage": {
+                value: "C# HTTP trigger",
+                code: {
+                  language: "csharp",
+                  content: `[FunctionName("HttpExample")]
+public static async Task<IActionResult> Run(
+    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+    ILogger log)
+{
+    string name = req.Query["name"];
+    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+    dynamic data = JsonConvert.DeserializeObject(requestBody);
+    name = name ?? data?.name;
+    
+    return name != null
+        ? (ActionResult)new OkObjectResult($"Hello, {name}")
+        : new BadRequestObjectResult("Please pass a name");
+}`
+                },
+                context: {
+                  type: "icon",
+                  content: "Azure Functions integrates seamlessly with Visual Studio and VS Code, providing excellent debugging and deployment experience."
+                }
+              }
             }
           }
         ]

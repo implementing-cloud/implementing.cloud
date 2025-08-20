@@ -3,6 +3,77 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
+/* Custom scrollbar styles for code blocks */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.zinc.600') theme('colors.zinc.800');
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: theme('colors.zinc.800');
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: theme('colors.zinc.600');
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.zinc.500');
+}
+
+.scrollbar-thumb-zinc-600 {
+  scrollbar-color: theme('colors.zinc.600') transparent;
+}
+
+.scrollbar-track-zinc-800 {
+  scrollbar-color: transparent theme('colors.zinc.800');
+}
+
+/* Ensure Shiki code blocks inherit proper styling */
+.shiki {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+.shiki pre {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  line-height: 1.5 !important;
+  white-space: pre !important;
+  overflow-x: visible !important;
+  display: block !important;
+}
+
+.shiki code {
+  background-color: transparent !important;
+  font-size: inherit !important;
+  padding: 0 !important;
+  white-space: pre !important;
+  display: block !important;
+}
+
+/* Ensure consistent code block width and proper scrolling */
+.code-block-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.code-block-content {
+  min-width: 100%;
+  max-width: none;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
