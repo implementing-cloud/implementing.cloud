@@ -1,3 +1,4 @@
+import React from "react";
 import { cn } from "@/lib/utils";
 import { type Service } from "@/lib/comparison-data";
 
@@ -46,14 +47,14 @@ export function ComparisonTable({
                 const solidValueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted";
                 
                 return (
-                  <>
+                  <React.Fragment key={feature}>
                     {/* Feature name row */}
                     <tr key={`${feature}-name`} className={cn("border-b")}>
                       <td className={cn("p-4 font-medium sticky left-0 z-[11] border-border")}>
                         {feature}
                       </td>
-                      {services.slice(1).map(() => (
-                        <td key={`${feature}-empty`} className="p-4 text-center">
+                      {services.slice(1).map((service, serviceIndex) => (
+                        <td key={`${feature}-empty-${service.id || serviceIndex}`} className="p-4 text-center">
                         </td>
                       ))}
                     </tr>
@@ -70,7 +71,7 @@ export function ComparisonTable({
                         </td>
                       ))}
                     </tr>
-                  </>
+                  </React.Fragment>
                 );
               })}
             </tbody>
