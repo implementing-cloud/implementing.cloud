@@ -52,7 +52,7 @@ export function ComparisonTable({
                       <td className={cn("p-4 font-medium sticky left-0 z-[11] border-border")}>
                         {feature}
                       </td>
-                      {services.map(() => (
+                      {services.slice(1).map(() => (
                         <td key={`${feature}-empty`} className="p-4 text-center">
                         </td>
                       ))}
