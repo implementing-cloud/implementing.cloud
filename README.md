@@ -39,6 +39,88 @@ npm run build
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
+## 🔍 Interactive Comparison Tables
+
+One of the key features of Implementing Cloud is the advanced comparison table system that helps developers compare cloud services with rich, interactive content.
+
+### Features
+
+#### 🎨 **Syntax-Highlighted Code Examples**
+- **Shiki Integration**: Professional code highlighting with GitHub dark theme
+- **Multi-language Support**: JavaScript, TypeScript, Python, C#, Go, and more
+- **Copy Functionality**: One-click copy with cross-browser support (including Firefox fallback)
+- **Responsive Design**: Code blocks adapt to column widths with horizontal scrolling
+
+#### 📚 **Contextual Information**
+- **Tooltip Context**: Hover over (?) icons for quick additional information
+- **Expandable Sections**: "More Context" collapsible sections for detailed explanations
+- **Rich Content**: Support for markdown-style text formatting
+
+#### 🔧 **Advanced Interactions**
+- **Collapsible Code**: Long code blocks automatically collapse with "Show more/less" controls
+- **Gradient Overlays**: Smooth visual transitions for collapsed content
+- **Smart Detection**: Automatically determines when content needs truncation (8+ lines or 300+ characters)
+
+### Usage Examples
+
+#### Adding Code Examples to Comparisons
+
+```typescript
+// In lib/comparison-data.ts
+export const serviceData = {
+  "Example Usage": {
+    value: "HTTP Handler",
+    code: {
+      language: "javascript",
+      content: `export const handler = async (event) => {
+  const { name } = JSON.parse(event.body);
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: \`Hello \${name}!\` })
+  };
+};`
+    },
+    context: {
+      type: "expandable", // or "icon"
+      content: "This example shows a basic HTTP handler with JSON parsing and response formatting."
+    }
+  }
+};
+```
+
+#### Supported Context Types
+
+1. **Icon Tooltip** (`type: "icon"`): Shows (?) icon with hover tooltip
+2. **Expandable Section** (`type: "expandable"`): Collapsible "More Context" section
+
+### Technical Features
+
+- **Cross-browser Clipboard**: Modern `navigator.clipboard` API with fallback for older browsers
+- **Consistent Layout**: Fixed column widths (320px) ensure uniform table appearance
+- **Performance Optimized**: Efficient rendering with conditional Shiki highlighting
+- **Accessibility**: Proper ARIA labels, keyboard navigation, and screen reader support
+- **Mobile Responsive**: Touch-friendly interactions and responsive breakpoints
+
+### Data Structure
+
+The comparison system uses an extended `FeatureValue` interface:
+
+```typescript
+interface FeatureValue {
+  value: string | number | boolean;
+  code?: {
+    language: string;
+    content: string;
+  };
+  context?: {
+    type: 'icon' | 'expandable';
+    content: string;
+  };
+}
+```
+
+This allows for backward compatibility with simple values while enabling rich content where needed.
+
 ## ✍️ Adding Blog Posts
 
 Create a new MDX file in `blog/content/` with format `your-post-title.mdx`:
@@ -117,11 +199,20 @@ Then reference your author in blog posts using the key (e.g., `author: "yourname
 
 ## 🛠️ Built With
 
+### Core Framework
 - **[Next.js 15](https://nextjs.org/)** - React framework with App Router
 - **[Fumadocs MDX](https://fumadocs.vercel.app/)** - MDX processing and components  
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
+
+### UI Components & Styling
 - **[Magic UI](https://magicui.design/)** - Beautiful UI components
+- **[Radix UI](https://www.radix-ui.com/)** - Unstyled, accessible UI primitives
+- **[Lucide React](https://lucide.dev/)** - Beautiful & consistent icon toolkit
+
+### Code Highlighting & Features
+- **[Shiki](https://shiki.style/)** - Syntax highlighter with VS Code themes
+- **[nuqs](https://nuqs.47ng.com/)** - Type-safe search params state management
 
 ## 🙏 Acknowledgments
 
