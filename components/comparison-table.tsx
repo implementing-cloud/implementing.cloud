@@ -28,11 +28,8 @@ export function ComparisonTable({
           <table className="w-full">
             <thead>
               <tr className="border-b bg-muted">
-                <th className="text-left p-4 font-medium sticky left-0 top-0 bg-muted min-w-[200px] z-[12] border-r border-border">
-                  Features
-                </th>
                 {services.map(service => (
-                  <th key={service.id} className="text-center p-4 font-medium min-w-[200px] sticky top-0 bg-muted z-[11]">
+                  <th key={service.id} className="text-center p-4 font-medium min-w-[200px] sticky top-0 bg-muted z-[12]">
                     <div className="flex flex-col items-center gap-2">
                       <span className="text-2xl">{service.logo}</span>
                       <span className="text-sm">{service.name}</span>
@@ -43,25 +40,37 @@ export function ComparisonTable({
             </thead>
             <tbody>
               {allFeatures.map((feature, index) => {
-                const rowBg = index % 2 === 0 ? "bg-background" : "bg-muted/25";
-                const solidRowBg = index % 2 === 0 ? "bg-background" : "bg-muted";
+                const rowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted/25";
+                const solidRowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted";
+                const valueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted/25";
+                const solidValueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted";
                 
                 return (
-                  <tr key={feature} className={cn("border-b", rowBg)}>
-                    <td className={cn("p-4 font-medium sticky left-0 z-[11] border-r border-border", solidRowBg)}>
-                      {feature}
-                    </td>
-                    {services.map(service => (
-                      <td key={service.id} className="p-4 text-center">
-                        <span className="text-sm">
-                          {service.features[feature] !== undefined 
-                            ? String(service.features[feature]) 
-                            : "N/A"
-                          }
-                        </span>
+                  <>
+                    {/* Feature name row */}
+                    <tr key={`${feature}-name`} className={cn("border-b")}>
+                      <td className={cn("p-4 font-medium sticky left-0 z-[11] border-border")}>
+                        {feature}
                       </td>
-                    ))}
-                  </tr>
+                      {services.map(() => (
+                        <td key={`${feature}-empty`} className="p-4 text-center">
+                        </td>
+                      ))}
+                    </tr>
+                    {/* Feature values row */}
+                    <tr key={`${feature}-values`} className={cn("border-b bg-muted/25")}>
+                      {services.map(service => (
+                        <td key={service.id} className="p-4 text-center">
+                          <span className="text-sm">
+                            {service.features[feature] !== undefined 
+                              ? String(service.features[feature]) 
+                              : "N/A"
+                            }
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                  </>
                 );
               })}
             </tbody>
