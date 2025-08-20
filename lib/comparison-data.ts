@@ -20,6 +20,20 @@ export interface ParentCategory {
   childCategories: ChildCategory[];
 }
 
+export interface Provider {
+  id: string;
+  name: string;
+  logo: string;
+  category: string;
+  features: Record<string, string | number | boolean>;
+}
+
+export interface ProviderCategory {
+  id: string;
+  name: string;
+  providers: Provider[];
+}
+
 // Sample data with parent/child structure
 export const parentCategories: ParentCategory[] = [
   {
@@ -443,4 +457,271 @@ export function normalizeServiceId(name: string): string {
 
 export function denormalizeServiceId(id: string): string {
   return id.replace(/_/g, ' ');
+}
+
+// Provider categories data
+export const providerCategories: ProviderCategory[] = [
+  {
+    id: "hyperscaler",
+    name: "Hyperscaler",
+    providers: [
+      {
+        id: "aws",
+        name: "Amazon Web Services",
+        logo: "🔶",
+        category: "hyperscaler",
+        features: {
+          "Founded": 2006,
+          "Global Regions": 31,
+          "Services Count": "200+",
+          "Market Share": "32%",
+          "Revenue (2023)": "$90.8B",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC, ISO, HIPAA, PCI DSS",
+          "Pricing Model": "Pay-as-you-go",
+          "Container Support": true
+        }
+      },
+      {
+        id: "azure",
+        name: "Microsoft Azure",
+        logo: "🔵",
+        category: "hyperscaler",
+        features: {
+          "Founded": 2010,
+          "Global Regions": 60,
+          "Services Count": "200+",
+          "Market Share": "23%",
+          "Revenue (2023)": "$73.7B",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC, ISO, HIPAA, PCI DSS",
+          "Pricing Model": "Pay-as-you-go",
+          "Container Support": true
+        }
+      },
+      {
+        id: "gcp",
+        name: "Google Cloud Platform",
+        logo: "🟡",
+        category: "hyperscaler",
+        features: {
+          "Founded": 2008,
+          "Global Regions": 37,
+          "Services Count": "100+",
+          "Market Share": "11%",
+          "Revenue (2023)": "$33.1B",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC, ISO, HIPAA, PCI DSS",
+          "Pricing Model": "Pay-as-you-go",
+          "Container Support": true
+        }
+      }
+    ]
+  },
+  {
+    id: "alternative-cloud",
+    name: "Alternative Cloud",
+    providers: [
+      {
+        id: "digitalocean",
+        name: "DigitalOcean",
+        logo: "🔷",
+        category: "alternative-cloud",
+        features: {
+          "Founded": 2011,
+          "Global Regions": 15,
+          "Services Count": "10+",
+          "Market Share": "2%",
+          "Revenue (2023)": "$694M",
+          "Free Tier": false,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2, ISO 27001",
+          "Pricing Model": "Simple, predictable",
+          "Container Support": true
+        }
+      },
+      {
+        id: "linode",
+        name: "Linode (Akamai)",
+        logo: "🟢",
+        category: "alternative-cloud",
+        features: {
+          "Founded": 2003,
+          "Global Regions": 11,
+          "Services Count": "15+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "N/A",
+          "Free Tier": false,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2, ISO 27001",
+          "Pricing Model": "Transparent pricing",
+          "Container Support": true
+        }
+      },
+      {
+        id: "vultr",
+        name: "Vultr",
+        logo: "🔥",
+        category: "alternative-cloud",
+        features: {
+          "Founded": 2014,
+          "Global Regions": 32,
+          "Services Count": "15+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "N/A",
+          "Free Tier": false,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2",
+          "Pricing Model": "Hourly/Monthly",
+          "Container Support": true
+        }
+      }
+    ]
+  },
+  {
+    id: "paas",
+    name: "Platform as a Service",
+    providers: [
+      {
+        id: "heroku",
+        name: "Heroku",
+        logo: "🟣",
+        category: "paas",
+        features: {
+          "Founded": 2007,
+          "Global Regions": 2,
+          "Services Count": "20+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "N/A",
+          "Free Tier": false,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2, ISO 27001",
+          "Pricing Model": "Dyno-based",
+          "Container Support": true
+        }
+      },
+      {
+        id: "vercel",
+        name: "Vercel",
+        logo: "⚡",
+        category: "paas",
+        features: {
+          "Founded": 2015,
+          "Global Regions": "Edge Network",
+          "Services Count": "10+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "$150M+",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2",
+          "Pricing Model": "Usage-based",
+          "Container Support": true
+        }
+      },
+      {
+        id: "netlify",
+        name: "Netlify",
+        logo: "🌐",
+        category: "paas",
+        features: {
+          "Founded": 2014,
+          "Global Regions": "Edge Network",
+          "Services Count": "15+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "$100M+",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2",
+          "Pricing Model": "Usage-based",
+          "Container Support": false
+        }
+      }
+    ]
+  },
+  {
+    id: "managed-database",
+    name: "Managed Database",
+    providers: [
+      {
+        id: "planetscale",
+        name: "PlanetScale",
+        logo: "🌟",
+        category: "managed-database",
+        features: {
+          "Founded": 2018,
+          "Global Regions": 8,
+          "Services Count": "3+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "N/A",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2",
+          "Pricing Model": "Usage-based",
+          "Container Support": false
+        }
+      },
+      {
+        id: "supabase",
+        name: "Supabase",
+        logo: "🟩",
+        category: "managed-database",
+        features: {
+          "Founded": 2020,
+          "Global Regions": 10,
+          "Services Count": "10+",
+          "Market Share": "<1%",
+          "Revenue (2023)": "$40M+",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC 2",
+          "Pricing Model": "Usage-based",
+          "Container Support": true
+        }
+      },
+      {
+        id: "mongodb_atlas",
+        name: "MongoDB Atlas",
+        logo: "🍃",
+        category: "managed-database",
+        features: {
+          "Founded": 2016,
+          "Global Regions": 80,
+          "Services Count": "5+",
+          "Market Share": "5%",
+          "Revenue (2023)": "$1.3B",
+          "Free Tier": true,
+          "Enterprise Support": true,
+          "Compliance": "SOC, ISO, HIPAA",
+          "Pricing Model": "Usage-based",
+          "Container Support": true
+        }
+      }
+    ]
+  }
+];
+
+// Utility functions for providers
+export function getAllProviders(): Provider[] {
+  return providerCategories.flatMap(category => category.providers);
+}
+
+export function getProviderById(id: string): Provider | undefined {
+  return getAllProviders().find(provider => provider.id === id);
+}
+
+export function getProvidersByIds(ids: string[]): Provider[] {
+  const allProviders = getAllProviders();
+  return ids.map(id => allProviders.find(provider => provider.id === id)).filter(Boolean) as Provider[];
+}
+
+export function getProviderCategoryById(id: string): ProviderCategory | undefined {
+  return providerCategories.find(category => category.id === id);
+}
+
+export function getProvidersByCategory(categoryId: string): Provider[] {
+  const category = getProviderCategoryById(categoryId);
+  return category?.providers || [];
 }

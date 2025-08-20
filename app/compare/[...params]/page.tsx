@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { 
-  getServicesByIds
+  getServicesByIds,
+  getProvidersByIds
 } from "@/lib/comparison-data";
 import { 
   getCategoriesByIds,
@@ -53,6 +54,39 @@ function parseComparisonParams(params: string[]) {
       services, 
       categoryData: [],
       parentCategory: services[0]?.parentCategory || null 
+    };
+  }
+
+  if (type === "provider") {
+    // Format: /compare/provider/aws-vs-azure-vs-gcp
+    const providerSlug = rest.join("/");
+    const providerIds = providerSlug.split("-vs-");
+    const providers = getProvidersByIds(providerIds);
+    
+    if (providers.length === 0) {
+      return { 
+        type: "invalid" as const, 
+        services: [], 
+        categoryData: [], 
+        parentCategory: null 
+      };
+    }
+
+    // Convert providers to service format for consistency
+    const providersAsServices = providers.map(provider => ({
+      id: provider.id,
+      name: provider.name,
+      logo: provider.logo,
+      parentCategory: provider.category,
+      childCategory: provider.category,
+      features: provider.features
+    }));
+
+    return { 
+      type: "provider" as const, 
+      services: providersAsServices, 
+      categoryData: [],
+      parentCategory: providers[0]?.category || null 
     };
   }
 
@@ -132,6 +166,25 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
       const lastService = otherServices.pop();
       description = `In this opportunity, we will compare ${serviceNames[0]} with ${otherServices.join(", ")}${otherServices.length > 0 ? ', and ' : ''}${lastService}. Let's see what is the most suitable for you.`;
     }
+  } else if (type === "provider") {
+    const providerNames = services.map(s => s.name);
+    
+    if (services.length === 1) {
+      title = `Deep Dive to ${providerNames[0]}`;
+      description = `In this deep dive, we'll explore ${providerNames[0]} in detail. Discover its features, pricing, and capabilities to see if it's suitable for you.`;
+    } else if (services.length <= 3) {
+      title = `${providerNames.join(" vs ")} Provider Comparison`;
+      if (services.length === 2) {
+        description = `In this comparison, we will compare ${providerNames[0]} with ${providerNames[1]}. Let's see which cloud provider is the most suitable for you.`;
+      } else {
+        description = `In this comparison, we will compare ${providerNames[0]} with ${providerNames[1]}, and ${providerNames[2]}. Let's see which cloud provider is the most suitable for you.`;
+      }
+    } else {
+      title = `${providerNames[0]} vs ${services.length - 1} other providers compared`;
+      const otherProviders = providerNames.slice(1);
+      const lastProvider = otherProviders.pop();
+      description = `In this opportunity, we will compare ${providerNames[0]} with ${otherProviders.join(", ")}${otherProviders.length > 0 ? ', and ' : ''}${lastProvider}. Let's see which cloud provider is the most suitable for you.`;
+    }
   } else {
     const categoryNames = categoryData.map(c => c.name);
     const parentName = getParentCategoryName(parentCategory!);
@@ -195,6 +248,25 @@ export default async function CompareParamsPage({ params }: ComparePageProps) {
       const lastService = otherServices.pop();
       description = `In this opportunity, we will compare ${serviceNames[0]} with ${otherServices.join(", ")}${otherServices.length > 0 ? ', and ' : ''}${lastService}`;
     }
+  } else if (type === "provider") {
+    const providerNames = services.map(s => s.name);
+    
+    if (services.length === 1) {
+      title = `Deep Dive to ${providerNames[0]}`;
+      description = `In this deep dive, we'll explore ${providerNames[0]} in detail`;
+    } else if (services.length <= 3) {
+      title = `${providerNames.join(" vs ")} Provider Comparison`;
+      if (services.length === 2) {
+        description = `In this comparison, we will compare ${providerNames[0]} with ${providerNames[1]}`;
+      } else {
+        description = `In this comparison, we will compare ${providerNames[0]} with ${providerNames[1]}, and ${providerNames[2]}`;
+      }
+    } else {
+      title = `${providerNames[0]} vs ${services.length - 1} other providers compared`;
+      const otherProviders = providerNames.slice(1);
+      const lastProvider = otherProviders.pop();
+      description = `In this opportunity, we will compare ${providerNames[0]} with ${otherProviders.join(", ")}${otherProviders.length > 0 ? ', and ' : ''}${lastProvider}`;
+    }
   } else {
     const categoryNames = categoryData.map(c => c.name);
     const parentName = getParentCategoryName(parentCategory!);
@@ -253,7 +325,7 @@ export default async function CompareParamsPage({ params }: ComparePageProps) {
         </div>
       </div>
 
-      {type === "service" ? (
+      {type === "service" || type === "provider" ? (
         <ComparisonTable
           services={services}
           onBackToSelection={() => {}} // Not used in this context
