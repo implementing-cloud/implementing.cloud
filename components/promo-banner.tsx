@@ -193,7 +193,7 @@ export function PromoBanner() {
       <div className="hidden lg:block">
         <BentoGrid className="lg:grid-rows-2">
           {features.map((feature) => {
-            const { shortName, ...bentoProps } = feature;
+            const { ...bentoProps } = feature;
             return <BentoCard key={feature.name} {...bentoProps} />;
           })}
         </BentoGrid>

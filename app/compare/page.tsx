@@ -282,9 +282,6 @@ function ComparePageContent() {
                             >
                               <CardContent className="p-3 text-center">
                                 <div className="font-medium text-sm">{category}</div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {categoryData[category].length} types
-                                </div>
                               </CardContent>
                             </Card>
                           ))}

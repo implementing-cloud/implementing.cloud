@@ -40,11 +40,11 @@ export function ComparisonTable({
               </tr>
             </thead>
             <tbody>
-              {allFeatures.map((feature, index) => {
-                const rowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted/25";
-                const solidRowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted";
-                const valueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted/25";
-                const solidValueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted";
+              {allFeatures.map((feature) => {
+                // const rowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted/25";
+                // const solidRowBg = index * 2 % 4 === 0 ? "bg-background" : "bg-muted";
+                // const valueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted/25";
+                // const solidValueRowBg = (index * 2 + 1) % 4 === 1 ? "bg-background" : "bg-muted";
                 
                 return (
                   <React.Fragment key={feature}>
