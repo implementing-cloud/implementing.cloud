@@ -192,9 +192,10 @@ export function PromoBanner() {
       {/* Desktop Layout */}
       <div className="hidden lg:block">
         <BentoGrid className="lg:grid-rows-2">
-          {features.map((feature) => (
-            <BentoCard key={feature.name} {...feature} />
-          ))}
+          {features.map((feature) => {
+            const { shortName, ...bentoProps } = feature;
+            return <BentoCard key={feature.name} {...bentoProps} />;
+          })}
         </BentoGrid>
       </div>
 
