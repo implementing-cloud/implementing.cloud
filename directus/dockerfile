@@ -1,0 +1,11 @@
+# Start from official Directus image
+FROM directus/directus:latest
+
+# Copy schema snapshot into the image
+COPY ./database/schema.yaml /directus/schema.yaml
+
+# Copy branding + extensions (logos, config.js, css, etc.)
+COPY ./extensions /directus/extensions
+
+# Ensure Directus applies schema on startup, then run Directus
+ENTRYPOINT ["sh", "-c", "npx directus schema apply /directus/schema.yaml && node /directus/start.mjs"]
