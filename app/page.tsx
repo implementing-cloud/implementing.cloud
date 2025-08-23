@@ -1,6 +1,3 @@
-import { docs, meta } from "@/.source";
-import { loader } from "fumadocs-core/source";
-import { createMDXSource } from "fumadocs-mdx";
 import { Suspense } from "react";
 import Link from "next/link";
 import { BlogCard } from "@/components/blog-card";
@@ -8,59 +5,23 @@ import { TagFilter } from "@/components/tag-filter";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { PromoBanner } from "@/components/promo-banner";
 import { HowItWorks } from "@/components/how-it-works";
+import { getAllBlogPosts, getAllBlogTags } from "@/lib/blog-service";
 
-interface BlogData {
-  title: string;
-  description: string;
-  date: string;
-  tags?: string[];
-  featured?: boolean;
-  readTime?: string;
-  author?: string;
-  authorImage?: string;
-  thumbnail?: string;
-}
-
-interface BlogPage {
-  url: string;
-  data: BlogData;
-}
-
-const blogSource = loader({
-  baseUrl: "/blog",
-  source: createMDXSource(docs, meta),
-});
-
-const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
 
 
 export default async function HomePage() {
-  const allPages = blogSource.getPages() as BlogPage[];
-  const sortedBlogs = allPages.sort((a, b) => {
-    const dateA = new Date(a.data.date).getTime();
-    const dateB = new Date(b.data.date).getTime();
-    return dateB - dateA;
-  });
-
-  const allTags = [
-    "All",
-    ...Array.from(
-      new Set(sortedBlogs.flatMap((blog) => blog.data.tags || []))
-    ).sort(),
-  ];
+  // Get blog posts from both MDX and Directus
+  const sortedBlogs = await getAllBlogPosts(20); // Limit to 20 posts for homepage
+  const blogTags = await getAllBlogTags();
+  
+  const allTags = ["All", ...blogTags];
 
   const tagCounts = allTags.reduce((acc, tag) => {
     if (tag === "All") {
       acc[tag] = sortedBlogs.length;
     } else {
       acc[tag] = sortedBlogs.filter((blog) =>
-        blog.data.tags?.includes(tag)
+        blog.tags.includes(tag)
       ).length;
     }
     return acc;
@@ -108,7 +69,7 @@ export default async function HomePage() {
       {/* Articles Section */}
       <div className="max-w-7xl mx-auto w-full px-6 lg:px-4">
         <div className="py-8">
-          <h2 className="text-2xl font-medium tracking-tight mb-6">You might interest</h2>
+          <h2 className="text-2xl font-medium tracking-tight mb-6">You Might Interest</h2>
         </div>
         <Suspense fallback={<div>Loading articles...</div>}>
           <div
@@ -117,18 +78,16 @@ export default async function HomePage() {
             }`}
           >
             {sortedBlogs.map((blog) => {
-              const date = new Date(blog.data.date);
-              const formattedDate = formatDate(date);
-
               return (
                 <BlogCard
-                  key={blog.url}
+                  key={blog.id}
                   url={blog.url}
-                  title={blog.data.title}
-                  description={blog.data.description}
-                  date={formattedDate}
-                  thumbnail={blog.data.thumbnail}
+                  title={blog.title}
+                  description={blog.excerpt || ''}
+                  date={blog.formattedDate}
+                  thumbnail={blog.thumbnail}
                   showRightBorder={sortedBlogs.length < 3}
+                  source={blog.source}
                 />
               );
             })}

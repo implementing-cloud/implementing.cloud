@@ -12,6 +12,7 @@ interface BlogCardProps {
   date: string;
   thumbnail?: string;
   showRightBorder?: boolean;
+  source?: 'mdx' | 'directus';
 }
 
 export function BlogCard({
@@ -21,6 +22,7 @@ export function BlogCard({
   date,
   thumbnail,
   showRightBorder = true,
+  source,
 }: BlogCardProps) {
   return (
     <div
@@ -43,9 +45,21 @@ export function BlogCard({
         )}
 
         <div className="p-6 flex flex-col gap-2 flex-grow">
-          <Link href={url} className="text-xl font-semibold text-card-foreground hover:text-primary transition-colors">
-            {title}
-          </Link>
+          <div className="flex items-start justify-between gap-2">
+            <Link href={url} className="text-xl font-semibold text-card-foreground hover:text-primary transition-colors flex-1">
+              {title}
+            </Link>
+            {/* Development source indicator */}
+            {process.env.NODE_ENV === 'development' && source && (
+              <span className={`text-xs px-2 py-1 rounded text-white ${
+                source === 'directus' 
+                  ? 'bg-green-600' 
+                  : 'bg-blue-600'
+              }`}>
+                {source.toUpperCase()}
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground text-sm">{description}</p>
           <time className="block text-sm font-medium text-muted-foreground">
             {date}

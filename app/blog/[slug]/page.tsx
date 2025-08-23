@@ -1,38 +1,35 @@
-import { docs, meta } from "@/.source";
 import { DocsBody } from "fumadocs-ui/page";
-import { loader } from "fumadocs-core/source";
-import { createMDXSource } from "fumadocs-mdx";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { serialize } from 'next-mdx-remote/serialize';
+import { rehypeCode } from 'fumadocs-core/mdx-plugins';
+import { type MDXRemoteSerializeResult } from 'next-mdx-remote';
+import dynamic from 'next/dynamic';
 
-import { TableOfContents } from "@/components/table-of-contents";
-import { MobileTableOfContents } from "@/components/mobile-toc";
+import { MDXContent } from "@/components/mdx-content";
+
 import { AuthorCard } from "@/components/author-card";
 import { ReadMoreSection } from "@/components/read-more-section";
 import { PromoContent } from "@/components/promo-content";
 import { getAuthor, isValidAuthor } from "@/lib/authors";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-import { HashScrollHandler } from "@/components/hash-scroll-handler";
+import { getBlogPostBySlug, getMDXPageData } from "@/lib/blog-service";
+
+// Dynamic imports for client components
+const TableOfContents = dynamic(() => import("@/components/table-of-contents").then(mod => ({ default: mod.TableOfContents })), {
+  loading: () => <div className="animate-pulse h-24 bg-muted rounded"></div>
+});
+
+const MobileTableOfContents = dynamic(() => import("@/components/mobile-toc").then(mod => ({ default: mod.MobileTableOfContents })));
+
+const HashScrollHandler = dynamic(() => import("@/components/hash-scroll-handler").then(mod => ({ default: mod.HashScrollHandler })));
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
-
-const blogSource = loader({
-  baseUrl: "/blog",
-  source: createMDXSource(docs, meta),
-});
-
-const formatDate = (date: Date): string => {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
 
 export default async function BlogPost({ params }: PageProps) {
   const { slug } = await params;
@@ -41,15 +38,33 @@ export default async function BlogPost({ params }: PageProps) {
     notFound();
   }
 
-  const page = blogSource.getPage([slug]);
+  // Get unified blog post (from either Directus or MDX)
+  const post = await getBlogPostBySlug(slug);
 
-  if (!page) {
+  if (!post) {
     notFound();
   }
 
-  const MDX = page.data.body;
-  const date = new Date(typeof page.data.date === 'string' ? page.data.date : Date.now());
-  const formattedDate = formatDate(date);
+  // Prepare content for rendering
+  let MDXComponent: React.ComponentType | null = null;
+  let mdxSource: MDXRemoteSerializeResult | null = null;
+
+  if (post.source === 'directus') {
+    // For Directus posts, serialize MDX content with syntax highlighting
+    if (post.content) {
+      mdxSource = await serialize(post.content, {
+        mdxOptions: {
+          rehypePlugins: [rehypeCode]
+        }
+      });
+    }
+  } else {
+    // For MDX posts, get the compiled component
+    const mdxPage = getMDXPageData(slug);
+    if (mdxPage) {
+      MDXComponent = mdxPage.data.body;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -74,9 +89,9 @@ export default async function BlogPost({ params }: PageProps) {
                 <span className="sr-only">Back to all articles</span>
               </Link>
             </Button>
-            {Array.isArray(page.data.tags) && page.data.tags.length > 0 && (
+            {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-3 text-muted-foreground">
-                {page.data.tags.map((tag: string) => (
+                {post.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="h-6 w-fit px-3 text-sm font-medium bg-muted text-muted-foreground rounded-md border flex items-center justify-center"
@@ -87,29 +102,40 @@ export default async function BlogPost({ params }: PageProps) {
               </div>
             )}
             <time className="font-medium text-muted-foreground">
-              {formattedDate}
+              {post.formattedDate}
             </time>
+            {/* Source indicator for development */}
+            {process.env.NODE_ENV === 'development' && (
+              <span className={`text-xs px-2 py-1 rounded ${
+                post.source === 'directus' 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' 
+                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'
+              }`}>
+                {post.source.toUpperCase()}
+              </span>
+            )}
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tighter text-balance">
-            {page.data.title}
+            {post.title}
           </h1>
 
-          {page.data.description && (
+          {post.excerpt && (
             <p className="text-muted-foreground max-w-4xl md:text-lg md:text-balance">
-              {page.data.description}
+              {post.excerpt}
             </p>
           )}
         </div>
       </div>
+      
       <div className="flex divide-x divide-border relative max-w-7xl mx-auto px-4 md:px-0 z-10">
         <div className="absolute max-w-7xl mx-auto left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] lg:w-full h-full border-x border-border p-0 pointer-events-none" />
-        <main className="w-full p-0 overflow-hidden">
-          {typeof page.data.thumbnail === 'string' && (
+        <main className="w-full p-0">
+          {post.thumbnail && (
             <div className="relative w-full h-[500px] overflow-hidden object-cover border border-transparent">
               <Image
-                src={page.data.thumbnail}
-                alt={page.data.title}
+                src={post.thumbnail}
+                alt={post.title}
                 fill
                 className="object-cover"
                 priority
@@ -117,25 +143,65 @@ export default async function BlogPost({ params }: PageProps) {
             </div>
           )}
           <div className="p-6 lg:p-10">
-            <div className="prose dark:prose-invert max-w-none prose-headings:scroll-mt-8 prose-headings:font-semibold prose-a:no-underline prose-headings:tracking-tight prose-headings:text-balance prose-p:tracking-tight prose-p:text-balance prose-lg">
-              <DocsBody>
-                <MDX />
-              </DocsBody>
-            </div>
+            {post.source === 'directus' ? (
+              // Render Directus MDX content
+              mdxSource ? (
+                <MDXContent source={mdxSource} />
+              ) : (
+                <p>No content available</p>
+              )
+            ) : (
+              // Render MDX component
+              MDXComponent ? (
+                <div className="prose dark:prose-invert max-w-none prose-headings:scroll-mt-8 prose-headings:font-semibold prose-a:no-underline prose-headings:tracking-tight prose-headings:text-balance prose-p:tracking-tight prose-p:text-balance prose-lg">
+                  <DocsBody>
+                    <MDXComponent />
+                  </DocsBody>
+                </div>
+              ) : (
+                <p>No content available</p>
+              )
+            )}
           </div>
           <div className="mt-10">
             <ReadMoreSection
               currentSlug={[slug]}
-              currentTags={Array.isArray(page.data.tags) ? page.data.tags : undefined}
+              currentTags={post.tags}
             />
           </div>
         </main>
 
         <aside className="hidden lg:block w-[350px] flex-shrink-0 p-6 lg:p-10 bg-muted/60 dark:bg-muted/20">
           <div className="sticky top-20 space-y-8">
-            {typeof page.data.author === 'string' && isValidAuthor(page.data.author) && (
-              <AuthorCard author={getAuthor(page.data.author)} />
+            {post.author && (
+              <div className="border border-border rounded-lg p-6 bg-card">
+                <div className="flex items-center gap-4">
+                  {post.author.avatar && (
+                    <Image
+                      src={post.author.avatar}
+                      alt={post.author.name}
+                      width={48}
+                      height={48}
+                      className="rounded-full"
+                    />
+                  )}
+                  <div>
+                    <div className="font-medium">{post.author.name}</div>
+                    {post.category && (
+                      <div className="text-sm text-muted-foreground">{post.category}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
+            
+            {(() => {
+              if (!post.author && post.source === 'mdx' && post.data?.author && typeof post.data.author === 'string' && isValidAuthor(post.data.author)) {
+                return <AuthorCard author={getAuthor(post.data.author)} />;
+              }
+              return null;
+            })()}
+            
             <div className="border border-border rounded-lg p-6 bg-card">
               <TableOfContents />
             </div>
