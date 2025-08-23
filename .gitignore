@@ -46,3 +46,6 @@ next-env.d.ts
 
 # fumadocs-mdx generated files
 .source/
+
+# directus database
+directus/database/data.db
